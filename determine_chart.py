@@ -1,30 +1,61 @@
 def choose_chart(data):
     if dataset_is_categories_and_numeric_values(data):
-        if dataset_is_one_numiric(data) and dataset_is_several_categorie(data):
-            pass
+        if dataset_is_one_numiric(data) and dataset_is_one_categorie(data):
+            if dataset_has_one_value_per_group(data):
+                if dataset_has_few_categories(data):
+                    return 'pie chart'
+                elif dataset_has_several_categories(data):
+                    return 'doughnut chart'
+            elif dataset_has_several_value_per_group(data):
+                if dataset_has_no_orderd_values(data):
+                    pass
+                elif dataset_has_orderd_values(data):
+                    pass
+                elif dataset_has_one_row_per_group(data):
+                    pass
         elif dataset_is_one_categorie(data) and dataset_is_seventh_numiric(data):
             pass
-        elif dataset_is_one_numiric(data) and dataset_is_one_categorie(data):
+        elif dataset_is_one_numiric(data) and dataset_is_several_categorie(data):
             pass
+
     elif dataset_is_categorical(data):
         if dataset_is_one_categorie(data):
             pass
         elif dataset_is_several_categorie(data):
             pass
+    #condition finished
     elif dataset_is_numeric(data):
+        #condition finished
         if dataset_is_one_numiric(data):
-            pass
+            return 'histogram'
+        #condition finished
         elif dataset_is_two_numiric(data):
-            pass
+            if dataset_is_not_orderd(data):
+                if dataset_has_few_points(data):
+                    return 'scatter plot'
+                elif dataset_has_many_points(data):
+                    return 'density plot'
+            elif dataset_is_orderd(data):
+                return 'area plot'
+        #condition finished
         elif dataset_is_three_numiric(data):
-            pass
+            if dataset_is_not_orderd(data):
+                    return 'bubble plot'
+            elif dataset_is_orderd(data):
+                return 'staked area plot'
+        #condition finished
         elif dataset_is_seventh_numiric(data):
-            pass
+            if dataset_is_not_orderd(data):
+                    return 'density plot'
+            elif dataset_is_orderd(data):
+                return 'line plot'
+
     elif dataset_is_time_series_data(data):
         if dataset_is_one_time_series(data):
-            pass
+            return 'bar plot'
         elif dataset_is_several_time_series(data):
-            pass
+            return 'stacked area chart'
+    
     elif dataset_is_networks_series(data):
         if dataset_is_nested_or_hierarchical(data):
             pass
