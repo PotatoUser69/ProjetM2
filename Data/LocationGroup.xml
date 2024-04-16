@@ -1,0 +1,73 @@
+<?xml version="1.0" ?>
+<Root>
+  <Record>
+    <locationGroupIdentifier>N-Reg</locationGroupIdentifier>
+    <locations.locationIdentifier>FAA - Washington</locations.locationIdentifier>
+    <locationGroupType>CUSTOMER</locationGroupType>
+    <locationGroupName>Northern region</locationGroupName>
+    <sourceLink>http://lighttree.com/N-Reg</sourceLink>
+  </Record>
+  <Record>
+    <locationGroupIdentifier>N-Reg</locationGroupIdentifier>
+    <locations.locationIdentifier>QPWD - Ville de Québec</locations.locationIdentifier>
+    <locationGroupType>CUSTOMER</locationGroupType>
+    <locationGroupName>Northern region</locationGroupName>
+    <sourceLink>http://lighttree.com/N-Reg</sourceLink>
+  </Record>
+  <Record>
+    <locationGroupIdentifier>N-Reg</locationGroupIdentifier>
+    <locations.locationIdentifier>MAHD - Boston</locations.locationIdentifier>
+    <locationGroupType>CUSTOMER</locationGroupType>
+    <locationGroupName>Northern region</locationGroupName>
+    <sourceLink>http://lighttree.com/N-Reg</sourceLink>
+  </Record>
+  <Record>
+    <locationGroupIdentifier>N-Reg</locationGroupIdentifier>
+    <locations.locationIdentifier>NYDOT - New Rochelle</locations.locationIdentifier>
+    <locationGroupType>CUSTOMER</locationGroupType>
+    <locationGroupName>Northern region</locationGroupName>
+    <sourceLink>http://lighttree.com/N-Reg</sourceLink>
+  </Record>
+  <Record>
+    <locationGroupIdentifier>N-US-Supp</locationGroupIdentifier>
+    <locations.locationIdentifier>Alumi-lux - Nashua</locations.locationIdentifier>
+    <locationGroupType>SUPPLIER</locationGroupType>
+    <locationGroupName>North US Suppliers</locationGroupName>
+    <sourceLink>http://lighttree.com/N-US-Supp</sourceLink>
+  </Record>
+  <Record>
+    <locationGroupIdentifier>N-US-Supp</locationGroupIdentifier>
+    <locations.locationIdentifier>Amos - Philadelphia</locations.locationIdentifier>
+    <locationGroupType>SUPPLIER</locationGroupType>
+    <locationGroupName>North US Suppliers</locationGroupName>
+    <sourceLink>http://lighttree.com/N-US-Supp</sourceLink>
+  </Record>
+  <Record>
+    <locationGroupIdentifier>N-US-Supp</locationGroupIdentifier>
+    <locations.locationIdentifier>Benchmark - Wheaton</locations.locationIdentifier>
+    <locationGroupType>SUPPLIER</locationGroupType>
+    <locationGroupName>North US Suppliers</locationGroupName>
+    <sourceLink>http://lighttree.com/N-US-Supp</sourceLink>
+  </Record>
+  <Record>
+    <locationGroupIdentifier>N-US-Supp</locationGroupIdentifier>
+    <locations.locationIdentifier>Core - Saranac Lake</locations.locationIdentifier>
+    <locationGroupType>SUPPLIER</locationGroupType>
+    <locationGroupName>North US Suppliers</locationGroupName>
+    <sourceLink>http://lighttree.com/N-US-Supp</sourceLink>
+  </Record>
+  <Record>
+    <locationGroupIdentifier>N-US-Supp</locationGroupIdentifier>
+    <locations.locationIdentifier>F &amp; M - Columbus</locations.locationIdentifier>
+    <locationGroupType>SUPPLIER</locationGroupType>
+    <locationGroupName>North US Suppliers</locationGroupName>
+    <sourceLink>http://lighttree.com/N-US-Supp</sourceLink>
+  </Record>
+  <Record>
+    <locationGroupIdentifier>N-US-Supp</locationGroupIdentifier>
+    <locations.locationIdentifier>Flexilux - Worcester</locations.locationIdentifier>
+    <locationGroupType>SUPPLIER</locationGroupType>
+    <locationGroupName>North US Suppliers</locationGroupName>
+    <sourceLink>http://lighttree.com/N-US-Su</sourceLink>
+  </Record>
+</Root>
