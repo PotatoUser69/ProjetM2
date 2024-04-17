@@ -1,4 +1,4 @@
--Work steps:
+- Work steps:
   - Step 1:
     Devid the chart into multiple categories depending on the dataset provided. 
   - Step 2:
@@ -9,4 +9,5 @@
     implement a testing system with multiple dataset.
   - Step 5:
     improving the consitions for the chart choosing mechanism.
-    
+- For more details visite:
+  https://www.data-to-viz.com/#dendrogram
