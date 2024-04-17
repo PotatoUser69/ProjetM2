@@ -65,7 +65,7 @@ def choose_chart(data):
                     return 'density plot'
             elif dataset_is_orderd(data):
                 return 'line plot'
-
+    #condition finished but can be improved
     elif dataset_is_time_series_data(data):
         if dataset_is_one_time_series(data):
             return 'bar plot'
