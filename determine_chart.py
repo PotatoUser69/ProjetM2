@@ -1,11 +1,17 @@
 def choose_chart(data):
     if dataset_is_categories_and_numeric_values(data):
         if dataset_is_one_numiric(data) and dataset_is_one_categorie(data):
+            #condition finished
             if dataset_has_one_value_per_group(data):
-                if dataset_has_few_categories(data):
+                if dataset_has_few_categories(data) and dataset_has_few_similaire_values(data):
+                    #have few categories and few similaire values
                     return 'pie chart'
-                elif dataset_has_several_categories(data):
+                elif not dataset_has_few_categories(data) and dataset_has_few_similaire_values(data):
+                    #have severale categories and few similaire values
                     return 'doughnut chart'
+                else:
+                    #have similaire values
+                    return 'bar plot'
             elif dataset_has_several_value_per_group(data):
                 if dataset_has_no_orderd_values(data):
                     pass
@@ -22,7 +28,17 @@ def choose_chart(data):
         if dataset_is_one_categorie(data):
             pass
         elif dataset_is_several_categorie(data):
-            pass
+            #condition finished
+            if dataset_has_two_independent_lists(data):
+                return 'venn diagram'
+            elif dataset_has_sub_groups(data):
+                #consider the other posibilitis as grouped bar plot and grouped scatter plot
+                return 'stacked bar plot'
+            elif dataset_has_nested_lists(data):
+                #consider the cas with multi layer nested like 4 or more layers
+                return 'treemap'
+            elif dataset_has_adjacency(data):
+                return 'venn diagram'
     #condition finished
     elif dataset_is_numeric(data):
         #condition finished
@@ -60,108 +76,6 @@ def choose_chart(data):
         if dataset_is_nested_or_hierarchical(data):
             pass
         pass
-
-def dataset_is_time_series_data(dataset):
-    return any(isinstance(column_data, pd.Timestamp) for column_data in dataset.dtypes)
-
-def dataset_is_categories_and_numeric_values(dataset):
-    return all(pd.api.types.is_numeric_dtype(dataset[column]) or pd.api.types.is_categorical_dtype(dataset[column]) for column in dataset.columns)
-
-def dataset_is_categorical_and_few_categories(dataset):
-    return all(pd.api.types.is_categorical_dtype(dataset[column]) and len(dataset[column].unique()) <= 10 for column in dataset.columns)
-
-def dataset_is_two_numeric_variables(dataset):
-    numeric_columns = [column for column in dataset.columns if pd.api.types.is_numeric_dtype(dataset[column])]
-    return len(numeric_columns) == 2
-
-def dataset_is_numeric_values(dataset):
-    return any(pd.api.types.is_numeric_dtype(dataset[column]) for column in dataset.columns)
-
-def dataset_is_hierarchical(dataset):
-    hierarchical_columns = ['parent', 'child']  # Example hierarchical columns
-    return all(column in dataset.columns for column in hierarchical_columns)
-
-def dataset_is_textual(dataset):
-    return any(pd.api.types.is_string_dtype(dataset[column]) for column in dataset.columns)
-
-def dataset_is_primary_measure(dataset):
-    numeric_columns = [column for column in dataset.columns if pd.api.types.is_numeric_dtype(dataset[column])]
-    return len(numeric_columns) == 1
-
-def dataset_represents_funnel_data(dataset):
-    numeric_columns = [column for column in dataset.columns if pd.api.types.is_numeric_dtype(dataset[column])]
-    return all(dataset[numeric_columns[i]].max() > dataset[numeric_columns[i+1]].max() for i in range(len(numeric_columns)-1))
-
-def dataset_is_flow_data(dataset):
-    return all(pd.api.types.is_numeric_dtype(dataset[column]) for column in dataset.columns)
-
-def dataset_is_relationship_data(dataset):
-    return all(pd.api.types.is_categorical_dtype(dataset[column]) for column in dataset.columns)
-
-def dataset_is_circular_data(dataset):
-    pass  
-
-def dataset_is_three_dimensional_data(dataset):
-    return all(len(dataset[column].unique()) > 1 for column in dataset.columns)
-
-    return all(pd.api.types.is_categorical_dtype(dataset[column]) for column in dataset.columns)
-
-def dataset_is_spatial_data(dataset):
-    return all(column in ['latitude', 'longitude'] for column in dataset.columns)
-
-def dataset_is_two_time_points(dataset):
-    time_columns = [column for column in dataset.columns if pd.api.types.is_datetime64_any_dtype(dataset[column])]
-    return len(time_columns) == 2
-
-def dataset_is_cumulative_changes(dataset):
-    numeric_columns = [column for column in dataset.columns if pd.api.types.is_numeric_dtype(dataset[column])]
-    return all(dataset[column].diff().fillna(0).ge(0).all() for column in numeric_columns)
-
-def dataset_is_error_data(dataset):
-    return all(pd.api.types.is_numeric_dtype(dataset[column]) for column in dataset.columns)
-
-def dataset_is_three_component_data(dataset):
-    return len(dataset.columns) == 3
-
-def dataset_is_financial_data(dataset):
-    return all(pd.api.types.is_numeric_dtype(dataset[column]) for column in dataset.columns)
-
-def dataset_is_population_data(dataset):
-    return all(pd.api.types.is_numeric_dtype(dataset[column]) for column in dataset.columns)
-
-def dataset_is_multiple_variables(dataset):
-    return len(dataset.columns) > 1
-    
-def dataset_is_matrix_like(dataset):
-    return dataset.shape[0] == dataset.shape[1]
-
-# def dataset_is_contour_data(dataset):
-#     # Evaluate if the dataset is contour data
-#     # For example, check if it contains continuous data over a 2D grid
-#     return all(pd.api.types.is_numeric_dtype(dataset[column]) for column in dataset.columns)
-
-# def dataset_is_parallel_set_data(dataset):
-#     # Evaluate if the dataset is parallel set data
-#     # For example, check if it contains categorical data with intersecting subsets
-#     return all(pd.api.types.is_categorical_dtype(dataset[column]) for column in dataset.columns)
-
-# def dataset_is_word_tree_data(dataset):
-#     # Evaluate if the dataset is word tree data
-#     # For example, check if it contains hierarchical textual data
-#     return all(pd.api.types.is_string_dtype(dataset[column]) for column in dataset.columns)
-
-# def dataset_represents_timeline_data(dataset):
-#     # Evaluate if the dataset represents timeline data
-#     # For example, check if it contains events with start and end times
-#     time_columns = [column for column in dataset.columns if pd.api.types.is_datetime64_any_dtype(dataset[column])]
-#     return len(time_columns) == 2
-
-# def dataset_represents_network_data(dataset):
-#     # Evaluate if the dataset represents network data
-#     # For example, check if it represents nodes and edges
-#     return 'source' in dataset.columns and 'target' in dataset.columns
-
-
 
 def load_csv_dataset(file_path):
     # Load dataset from CSV file
