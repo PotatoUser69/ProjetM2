@@ -1,0 +1,12 @@
+-Work steps:
+  - Step 1:
+    Devid the chart into multiple categories depending on the dataset provided. 
+  - Step 2:
+    Add more details for choosing the correct chart in each category.
+  - Step 3:
+    implement the functions to verify the dataset types and values.
+  - Step 4:
+    implement a testing system with multiple dataset.
+  - Step 5:
+    improving the consitions for the chart choosing mechanism.
+    
