@@ -43,7 +43,11 @@ def choose_chart(data):
                 return 'venn diagram'
             elif dataset_has_sub_groups(data):
                 #consider the other posibilitis as grouped bar plot and grouped scatter plot
-                return 'stacked bar plot'
+                return 'test diagram'
+            elif dataset_has_one_grp(data):
+                return'test diagram'
+            
+
             elif dataset_has_nested_lists(data):
                 #consider the cas with multi layer nested like 4 or more layers
                 return 'treemap'
