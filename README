@@ -1,13 +1,5 @@
 - Work steps:
-  - Step 1:
-    Devid the chart into multiple categories depending on the dataset provided. 
-  - Step 2:
-    Add more details for choosing the correct chart in each category.
-  - Step 3:
-    implement the functions to verify the dataset types and values.
-  - Step 4:
-    implement a testing system with multiple dataset.
-  - Step 5:
-    improving the consitions for the chart choosing mechanism.
+  we have problem with dataset_has_two_independent_lists that is detecting all the categorical data as a 2 listes of data
+  we need to specify more details like categories dont repeate and other things
 - For more details visite:
   https://www.data-to-viz.com/#dendrogram

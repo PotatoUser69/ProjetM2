@@ -33,12 +33,12 @@ def choose_chart(data):
                 return 'violin'
             elif dataset_has_adjacency(data):
                 return 'arc'
+    
     #data can't be cat and num at the same time
     elif dataset_is_categorical(data):
         if dataset_is_one_categorie(data):
             return 'barplot'
-        elif dataset_is_several_categorie(data):
-
+        elif not dataset_is_one_categorie(data):
             #condition finished
             if dataset_has_two_independent_lists(data):
                 return 'venn diagram'
@@ -50,6 +50,7 @@ def choose_chart(data):
                 return 'treemap'
             elif dataset_has_adjacency(data):
                 return 'chord diagram'
+    
     #condition finished
     #data is not cat at all can be num timeseries or network
     elif dataset_is_numeric(data):
@@ -77,6 +78,7 @@ def choose_chart(data):
                     return 'density plot'
             elif dataset_is_orderd(data):
                 return 'line plot'
+    
     #condition finished but can be improved
     #data is not cat or num at all
     elif dataset_is_time_series_data(data):
@@ -84,7 +86,8 @@ def choose_chart(data):
             return 'bar plot'
         elif dataset_is_several_time_series(data):
             return 'stacked area chart'
-    #data is eather netork or something else not detected
+    
+    #data is either netork or something else not detected
     elif dataset_is_networks_series(data):
         if dataset_is_nested_or_hierarchical(data):
             return 'DENDROGRAM'
@@ -149,7 +152,7 @@ def dataset_has_few_categories(data):
         if unique_count > threshold:
             return False  # Return False if any column has more than the threshold number of unique values
     
-    return True0
+    return True
 
 # Function to check if dataset has few similar values
 def dataset_has_few_similaire_values(data):
@@ -166,6 +169,19 @@ def dataset_has_few_similaire_values(data):
             return True  # Return True if few similar values are found
     
     return False
+
+def dataset_has_two_independent_lists(data):
+    # Filter for categorical columns
+    categorical_columns = data.select_dtypes(include=['object', 'category']).columns
+
+    # We need at least two categorical columns to check for independence
+    if len(categorical_columns) < 2:
+        return False
+
+    # We could add more sophisticated checks here for independence,
+    # such as statistical tests for independence (chi-square tests of independence, etc.)
+    # For simplicity, this function assumes different categorical columns are independent
+    return True
 
 # Function to check if dataset has no ordered values
 def dataset_has_no_orderd_values(data):
@@ -271,7 +287,20 @@ def load_csv_dataset(file_path):
     # Load dataset from CSV file
     return pd.read_csv(file_path)
 
-def __main__(self):
-    dataset = load_csv_dataset(file_path='Data\\categoric_two_independent.csv')
-    selected_chart = determine_chart(dataset)
+import pandas as pd
+import os
+
+def main(repo):
+    dataset = load_csv_dataset(file_path=repo)
+    selected_chart = choose_chart(dataset)
     print("Selected chart type:", selected_chart)
+
+def launch_test(directory):
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            print(file)
+            main(os.path.join(root, file))
+
+if __name__ == "__main__":
+    repo_path = "C:\\Users\\totti\\VSCodeProjects\\Jupiter\\ProjetM2\\Data"
+    launch_test(repo_path)
