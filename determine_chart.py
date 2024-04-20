@@ -36,23 +36,20 @@ def choose_chart(data):
     #data can't be cat and num at the same time
     elif dataset_is_categorical(data):
         if dataset_is_one_categorie(data):
-            pass
-        elif not dataset_is_one_categorie(data):
+            return 'barplot'
+        elif dataset_is_several_categorie(data):
+
             #condition finished
             if dataset_has_two_independent_lists(data):
                 return 'venn diagram'
             elif dataset_has_sub_groups(data):
                 #consider the other posibilitis as grouped bar plot and grouped scatter plot
-                return 'test diagram'
-            elif dataset_has_one_grp(data):
-                return'test diagram'
-            
-
+                return 'groupedscatterplot'
             elif dataset_has_nested_lists(data):
                 #consider the cas with multi layer nested like 4 or more layers
                 return 'treemap'
             elif dataset_has_adjacency(data):
-                return 'venn diagram'
+                return 'chord diagram'
     #condition finished
     #data is not cat at all can be num timeseries or network
     elif dataset_is_numeric(data):
