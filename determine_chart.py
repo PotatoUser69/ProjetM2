@@ -272,6 +272,6 @@ def load_csv_dataset(file_path):
     return pd.read_csv(file_path)
 
 def __main__(self):
-    dataset = load_csv_dataset(file_path='Data\\LocationGroup.csv')
+    dataset = load_csv_dataset(file_path='Data\\categoric_two_independent.csv')
     selected_chart = determine_chart(dataset)
     print("Selected chart type:", selected_chart)
