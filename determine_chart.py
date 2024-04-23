@@ -1,20 +1,24 @@
 import pandas as pd
 import os
 from datetime import datetime
+import pycountry
 
 def choose_chart(data):
-    if dataset_is_networks_series(data):
-        return 'network'
-    elif dataset_is_categories_and_numeric_values(data):
+    if dataset_is_categories_and_numeric_values(data):
         if dataset_is_time_series_data(data):
-            if dataset_is_several_numiric(data):
-                return 'line plot'
             if dataset_is_one_numiric(data):
                 return 'area plot'
-        if dataset_is_one_categorie(data):
+            else:
+                return 'line plot'
+        elif dataset_has_country_data(data):
+            if dataset_is_one_numiric(data):
+                return 'map with values'
+            elif dataset_is_three_numiric(data):
+                return 'bubble map'
+        elif dataset_is_one_categorie(data):
             if dataset_is_one_numiric(data):
                 if dataset_has_few_categories(data) and dataset_has_few_similaire_values(data):
-                    return 'pir chart'
+                    return 'pie chart'
                 elif not dataset_has_few_categories(data) and dataset_has_few_similaire_values(data):
                     return 'dount chart'
                 else:
@@ -90,8 +94,22 @@ def dataset_is_time_series_data(data):
         if is_date_or_time_column:
             return True
     return False
-    
-def dataset_is_networks_series(data):
+
+def is_country(name):
+    country_names = set(country.name for country in pycountry.countries)
+    return name in country_names
+
+def is_column_countries(column_values):
+    for value in column_values:
+        if not is_country(value):
+            return False
+    return True
+
+def dataset_has_country_data(data):
+    categorical_columns = [col for col in data.columns if data[col].dtype == 'object']
+    for col in categorical_columns:
+        if len(data[col]) == len(set(data[col])) and is_column_countries(data[col]):
+            return True
     return False
 
 def dataset_has_sub_groups(data):
@@ -204,7 +222,10 @@ def launch_test(directory):
     for root, dirs, files in os.walk(directory):
         for file in files:
             print(file)
-            main(os.path.join(root, file))
+            if file=="country_data.csv":
+                main(os.path.join(root, file))
+            else:
+                main(os.path.join(root, file))
 
 if __name__ == "__main__":
     repo_path = "C:\\Users\\totti\\VSCodeProjects\\Jupiter\\ProjetM2\\Data"
