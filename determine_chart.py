@@ -63,6 +63,15 @@ def choose_chart(data):
             return 'bubble chart'
     return 'unhendeld error'
         
+
+def dataset_has_sub_groups(data):
+    unique_combinations = data.groupby(list(data.columns)).size().reset_index().rename(columns={0:'count'})
+    if len(unique_combinations) > 1:
+        return True
+    else:
+        return False
+
+
 def IsTimeOrDate(input_str):
     formats = [
         "%Y-%m-%d",
@@ -110,9 +119,6 @@ def dataset_has_country_data(data):
     for col in categorical_columns:
         if len(data[col]) == len(set(data[col])) and is_column_countries(data[col]):
             return True
-    return False
-
-def dataset_has_sub_groups(data):
     return False
 
 def dataset_has_many_point(data):
@@ -222,11 +228,8 @@ def launch_test(directory):
     for root, dirs, files in os.walk(directory):
         for file in files:
             print(file)
-            if file=="country_data.csv":
-                main(os.path.join(root, file))
-            else:
-                main(os.path.join(root, file))
+            main(os.path.join(root, file))
 
 if __name__ == "__main__":
-    repo_path = "C:\\Users\\totti\\VSCodeProjects\\Jupiter\\ProjetM2\\Data"
+    repo_path = str(os.getcwd()+"//Data")
     launch_test(repo_path)
