@@ -1,15 +1,16 @@
 import pandas as pd
 import os
+from datetime import datetime
 
 def choose_chart(data):
-    if dataset_is_time_series_data(data):
-        if dataset_is_several_numiric(data):
-            return 'line plot'
-        if dataset_is_one_numiric(data):
-            return 'area plot'
-    elif dataset_is_networks_series(data):
+    if dataset_is_networks_series(data):
         return 'network'
     elif dataset_is_categories_and_numeric_values(data):
+        if dataset_is_time_series_data(data):
+            if dataset_is_several_numiric(data):
+                return 'line plot'
+            if dataset_is_one_numiric(data):
+                return 'area plot'
         if dataset_is_one_categorie(data):
             if dataset_is_one_numiric(data):
                 if dataset_has_few_categories(data) and dataset_has_few_similaire_values(data):
@@ -58,8 +59,36 @@ def choose_chart(data):
             return 'bubble chart'
     return 'unhendeld error'
         
+def IsTimeOrDate(input_str):
+    formats = [
+        "%Y-%m-%d",
+        "%Y-%m-%dT%H:%M:%S",
+        "%m/%d/%Y",
+        "%d/%m/%Y",
+        "%d-%m-%Y",
+        "%m/%d/%Y %I:%M:%S %p",
+        "%d/%m/%Y %I:%M:%S %p",
+        "%m-%d-%Y %I:%M:%S %p",
+        "%d-%m-%Y %I:%M:%S %p",
+    ]
+
+    for fmt in formats:
+        try:
+            datetime.strptime(input_str, fmt)
+            return True
+        except ValueError:
+            pass
+    return False
 
 def dataset_is_time_series_data(data):
+    for col in data.columns:
+        is_date_or_time_column = True
+        for value in data[col]:
+            if not IsTimeOrDate(str(value)):
+                is_date_or_time_column = False
+                break
+        if is_date_or_time_column:
+            return True
     return False
     
 def dataset_is_networks_series(data):
