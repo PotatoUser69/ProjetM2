@@ -4,8 +4,11 @@ from datetime import datetime
 import pycountry
 
 def choose_chart(data):
+    #verify if data is categorical and also numerical
     if dataset_is_categories_and_numeric_values(data):
+        #verify if data is time series
         if dataset_is_time_series_data(data):
+            #verify if data containe one set of numerical data or several
             if dataset_is_one_numiric(data):
                 return 'area plot'
             else:
@@ -13,17 +16,20 @@ def choose_chart(data):
         elif dataset_has_country_data(data):
             if dataset_is_one_numiric(data):
                 return 'map with values'
-            elif dataset_is_three_numiric(data):
-                return 'bubble map'
+        #verify if data containe one set of categorical data or several
         elif dataset_is_one_categorie(data):
+            #verify if data containe one set of numerical values or several
             if dataset_is_one_numiric(data):
+                #verify if categorical data have less then 6 values and have few similaire values
                 if dataset_has_few_categories(data) and dataset_has_few_similaire_values(data):
                     return 'pie chart'
+                #verify if categorical data have more then 6 values and have few similaire values
                 elif not dataset_has_few_categories(data) and dataset_has_few_similaire_values(data):
                     return 'dount chart'
                 else:
                     return 'bar chart'
             elif dataset_is_two_numiric(data):
+                #verify if categorical data don't have any repeted values
                 if dataset_has_one_value_per_categorie_group(data):
                     return 'grouped bar plot'
                 else:
@@ -31,15 +37,18 @@ def choose_chart(data):
             elif dataset_is_three_numiric(data):
                 return 'bubble chart'
             elif dataset_is_several_numiric(data):
+                #verify if categorical data don't have any repeted values
                 if dataset_has_one_value_per_categorie_group(data):
+                    #verify if categorical data have less then 4 values
                     if dataset_has_less_then_4_categories(data):
                         return 'radar chart'
                     return 'heatmap'
                 else:
                     return 'box plot'
         elif dataset_is_two_categorie(data):
-            #unfinished
+            #verify if data containe one set of numerical values or several
             if dataset_is_one_numiric(data):
+                #verify if data have categories and subcategories
                 if dataset_has_sub_groups(data):
                     return 'treemap'
             elif dataset_is_three_numiric(data):
@@ -47,15 +56,20 @@ def choose_chart(data):
             else:
                 return 'parallel coordinates plot'
         elif dataset_is_several_categorie(data):
+            #verify if data containe one set of numerical values or several
             if dataset_is_one_numiric(data):
+                #verify if data have categories and subcategories
                 if dataset_has_sub_groups(data):
                     return 'sunburst chart'
             else:
                 return 'parallel coordinates plot'
+    #verify if data containe numerical data
     elif dataset_is_numeric(data):
+        #verify if data containe one set of numerical values or several
         if dataset_is_one_numiric(data):
             return 'histogram'
         elif dataset_is_two_numiric(data):
+            #verify if data have many values more then 400 data 
             if dataset_has_many_point(data):
                 return 'histogram'
             return 'scatter plot'
@@ -63,7 +77,6 @@ def choose_chart(data):
             return 'bubble chart'
     return 'unhendeld error'
         
-
 def dataset_has_sub_groups(data):
     unique_combinations = data.groupby(list(data.columns)).size().reset_index().rename(columns={0:'count'})
     if len(unique_combinations) > 1:
@@ -212,12 +225,23 @@ def dataset_has_few_similaire_values(data):
     return False
 
 def dataset_cleaning(data):
-    #change year data to str
-    pass
+    # Identify columns that might represent years
+    potential_year_columns = []
+    for col in data.columns:
+        if 'year' in col.lower() or 'yr' in col.lower():
+            potential_year_columns.append(col)
+        elif data[col].dtype == 'int64' and data[col].min() >= 1900 and data[col].max() <= 2100:
+            potential_year_columns.append(col)
+
+    # Convert the identified year columns to categorical data
+    for col in potential_year_columns:
+        data[col] = data[col].astype(str)
+
+    return data
 
 def load_csv_dataset(file_path):
     # Load dataset from CSV file
-    return pd.read_csv(file_path)
+    return dataset_cleaning(pd.read_csv(file_path))
 
 def main(repo):
     dataset = load_csv_dataset(file_path=repo)
