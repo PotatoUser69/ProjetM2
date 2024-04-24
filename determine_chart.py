@@ -53,16 +53,16 @@ def choose_chart(data):
                     return 'treemap'
             elif dataset_is_three_numiric(data):
                 return 'bubble chart'
-            else:
-                return 'parallel coordinates plot'
+            # else:
+            #     return 'parallel coordinates plot'
         elif dataset_is_several_categorie(data):
             #verify if data containe one set of numerical values or several
             if dataset_is_one_numiric(data):
                 #verify if data have categories and subcategories
                 if dataset_has_sub_groups(data):
                     return 'sunburst chart'
-            else:
-                return 'parallel coordinates plot'
+            # else:
+            #     return 'parallel coordinates plot'
     #verify if data containe numerical data
     elif dataset_is_numeric(data):
         #verify if data containe one set of numerical values or several
@@ -75,7 +75,7 @@ def choose_chart(data):
             return 'scatter plot'
         elif dataset_is_three_numiric(data):
             return 'bubble chart'
-    return 'unhendeld error'
+    return choose_chart(remove_least_important_column(data))
         
 def dataset_has_sub_groups(data):
     unique_combinations = data.groupby(list(data.columns)).size().reset_index().rename(columns={0:'count'})
@@ -163,6 +163,11 @@ def dataset_is_several_numiric(data):
     numeric_columns = data.select_dtypes(include=['number']).columns
     
     return len(numeric_columns) > 3
+
+def dataset_has_more_then_one_numiric(data):
+    numeric_columns = data.select_dtypes(include=['number']).columns
+    
+    return len(numeric_columns) > 1
 
 def dataset_is_one_categorie(data):
     categorical_columns = data.select_dtypes(include=['object']).columns
