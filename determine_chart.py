@@ -12,7 +12,7 @@ def choose_chart(data):
         if dataset_is_time_series_data(data):
             #verify if data containe one set of numerical data or several
             if dataset_is_one_numiric(data):
-                return 'area plot'
+                return area(data)
             else:
                 return line(data)
         elif dataset_has_country_data(data):
@@ -99,14 +99,29 @@ def line(data):
     
     for cat_col in categorical_columns:
         for num_col in numeric_columns:
-            print(num_col)
             plt.plot(data[cat_col], data[num_col], label=num_col)
     plt.xlabel(categorical_columns[0])
-    plt.xticks(rotation=45, ha='right')
-    plt.legend()
+    if len(data[categorical_columns[0]]) > 8 or any(len(str(label)) > 7 for label in data[categorical_columns[0]]):
+        plt.xticks(rotation=45, ha='right')
     plt.tight_layout()
+    plt.legend()
     plt.show()
     return 'line chart'
+
+def area(data):
+    numeric_columns = data.select_dtypes(include=['number']).columns
+    categorical_columns = data.select_dtypes(include=['object']).columns
+    plt.fill_between(data[categorical_columns[0]], data[numeric_columns[0]], color="skyblue", alpha=0.4)
+    plt.plot(data[categorical_columns[0]],data[numeric_columns[0]], color="Slateblue", alpha=0.6, linewidth=2)
+    plt.xlabel(categorical_columns[0])
+    plt.ylabel(numeric_columns[0])
+    if len(data[categorical_columns[0]]) > 8 or any(len(str(label)) > 7 for label in data[categorical_columns[0]]):
+        plt.xticks(rotation=45, ha='right')
+    plt.tight_layout()
+    plt.xlim(data[categorical_columns[0]].min(), data[categorical_columns[0]].max())  # Adjust as needed for x-axis
+    plt.ylim(0, data[numeric_columns[0]].max()) 
+    plt.show()
+    return 'area chart'
 
 def pie(data):
     categorical_columns = data.select_dtypes(include=['object']).columns
@@ -328,7 +343,7 @@ def main(repo):
 def launch_test(directory):
     for root, dirs, files in os.walk(directory):
         for file in files:
-            if file =="time_serise_several.csv":
+            if file =="time_serise_one.csv":
                 main(os.path.join(root, file))
 
 if __name__ == "__main__":
