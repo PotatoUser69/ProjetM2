@@ -1,6 +1,8 @@
 import pandas as pd
-import os
+import numpy as np
+import matplotlib.pyplot as plt
 from datetime import datetime
+import os
 import pycountry
 
 def choose_chart(data):
@@ -22,10 +24,10 @@ def choose_chart(data):
             if dataset_is_one_numiric(data):
                 #verify if categorical data have less then 6 values and have few similaire values
                 if dataset_has_few_categories(data) and dataset_has_few_similaire_values(data):
-                    return 'pie chart'
+                    return pie(data)
                 #verify if categorical data have more then 6 values and have few similaire values
                 elif not dataset_has_few_categories(data) and dataset_has_few_similaire_values(data):
-                    return 'dount chart'
+                    return donut(data)
                 else:
                     return 'bar chart'
             elif dataset_is_two_numiric(data):
@@ -67,16 +69,53 @@ def choose_chart(data):
     elif dataset_is_numeric(data):
         #verify if data containe one set of numerical values or several
         if dataset_is_one_numiric(data):
-            return 'histogram'
+            return histogram(data,data.columns[0])
         elif dataset_is_two_numiric(data):
             #verify if data have many values more then 400 data 
             if dataset_has_many_point(data):
-                return 'histogram'
-            return 'scatter plot'
+                return histogram(data,data.columns[0],data.columns[1])
+            return scatter(data,data.columns[0],data.columns[1])
         elif dataset_is_three_numiric(data):
             return 'bubble chart'
+    return 'error'
     return choose_chart(remove_least_important_column(data))
         
+def histogram(data,xlabel="Value",ylabel="Frequency"):
+    num_bins = int(np.sqrt(len(data)))
+    plt.hist(data, bins=num_bins, edgecolor='black')
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.show()
+        
+def scatter(data,xlabel="Value",ylabel="Frequency"):
+    plt.scatter(data[xlabel], data[ylabel], alpha=0.5)
+    plt.show()  
+
+def pie(data):
+    categorical_columns = data.select_dtypes(include=['object']).columns
+    numeric_columns = data.select_dtypes(include=['number']).columns
+    num_data = data[numeric_columns[0]]
+    labels = data[categorical_columns[0]]
+    plt.pie(num_data,labels=labels,autopct='%1.1f%%')
+    plt.show()  
+
+def donut(data):
+    categorical_columns = data.select_dtypes(include=['object']).columns
+    numeric_columns = data.select_dtypes(include=['number']).columns
+    num_data = data[numeric_columns[0]]
+    labels = data[categorical_columns[0]]
+    print("dia idb  djbaz djkbajdlbzakdjl zbakdjbakjdbkazjbdjkazbdkja")
+    plt.pie(num_data, labels=labels,
+        autopct='%1.1f%%', pctdistance=0.85)
+ 
+    # draw circle
+    centre_circle = plt.Circle((0, 0), 0.65, fc='white')
+    fig = plt.gcf()
+    
+    # Adding Circle in Pie chart
+    fig.gca().add_artist(centre_circle)
+    plt.show()  
+
 def dataset_has_sub_groups(data):
     unique_combinations = data.groupby(list(data.columns)).size().reset_index().rename(columns={0:'count'})
     if len(unique_combinations) > 1:
@@ -201,7 +240,7 @@ def dataset_has_one_value_per_categorie_group(data):
 
 def dataset_has_few_categories(data):
     categorical_columns = [col for col in data.columns if data[col].dtype == 'object']
-    threshold = 6
+    threshold = 5
     for col in categorical_columns:
         unique_count = data[col].nunique()
         if unique_count > threshold:
@@ -219,15 +258,20 @@ def dataset_has_less_then_4_categories(data):
     return True
 
 def dataset_has_few_similaire_values(data):
-    similarity_threshold = 2  
+    numerical_columns = data.select_dtypes(include=['number']).columns
     
-    for col in data.columns:
-        value_counts = data[col].value_counts()
-        
-        if len(value_counts) > 1 and value_counts.iloc[0] >= value_counts.iloc[1:].sum() + similarity_threshold:
-            return True  
+    numerical_column = numerical_columns[0]
     
-    return False
+    percentages = (data[numerical_column] / data[numerical_column].sum()) * 100
+    
+    similarity_count = 0
+
+    for value in percentages:
+        similar_values = percentages[(percentages >= value - 5) & (percentages <= value + 5)]
+        if len(similar_values) >= 3:
+            similarity_count += 1
+    
+    return similarity_count < 3
 
 def dataset_cleaning(data):
     # Identify columns that might represent years
