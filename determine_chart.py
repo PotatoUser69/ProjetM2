@@ -29,7 +29,7 @@ def choose_chart(data):
                 elif not dataset_has_few_categories(data) and dataset_has_few_similaire_values(data):
                     return donut(data)
                 else:
-                    return 'bar chart'
+                    return bar(data)
             elif dataset_is_two_numiric(data):
                 #verify if categorical data don't have any repeted values
                 if dataset_has_one_value_per_categorie_group(data):
@@ -99,20 +99,26 @@ def pie(data):
     plt.pie(num_data,labels=labels,autopct='%1.1f%%')
     plt.show()  
 
+def bar(data):
+    categorical_columns = data.select_dtypes(include=['object']).columns
+    numeric_columns = data.select_dtypes(include=['number']).columns
+    num_data = data[numeric_columns[0]]
+    labels = data[categorical_columns[0]]
+    plt.bar(labels,num_data)
+    plt.ylabel(numeric_columns[0])
+    if len(labels) > 5 or any(len(str(label)) > 10 for label in labels):
+        plt.xticks(rotation=45, ha='right')
+    plt.tight_layout()
+    plt.show()
 def donut(data):
     categorical_columns = data.select_dtypes(include=['object']).columns
     numeric_columns = data.select_dtypes(include=['number']).columns
     num_data = data[numeric_columns[0]]
     labels = data[categorical_columns[0]]
-    print("dia idb  djbaz djkbajdlbzakdjl zbakdjbakjdbkazjbdjkazbdkja")
     plt.pie(num_data, labels=labels,
         autopct='%1.1f%%', pctdistance=0.85)
- 
-    # draw circle
     centre_circle = plt.Circle((0, 0), 0.65, fc='white')
     fig = plt.gcf()
-    
-    # Adding Circle in Pie chart
     fig.gca().add_artist(centre_circle)
     plt.show()  
 
