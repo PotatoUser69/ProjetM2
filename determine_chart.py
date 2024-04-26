@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 import os
 import pycountry
+import mplcursors
 
 def choose_chart(data):
     #verify if data is categorical and also numerical
@@ -36,8 +37,8 @@ def choose_chart(data):
                     return 'grouped bar plot'
                 else:
                     return 'box plot'
-            elif dataset_is_three_numiric(data):
-                return 'bubble chart'
+            elif dataset_is_three_numiric(data) and dataset_has_no_duplicate_values(data):
+                return bubble_one_cat(data)
             elif dataset_is_several_numiric(data):
                 #verify if categorical data don't have any repeted values
                 if dataset_has_one_value_per_categorie_group(data):
@@ -107,7 +108,26 @@ def bubble(data):
 
     plt.show()
     return 'bubble chart N'
-        
+
+def bubble_one_cat(data):
+    numeric_columns = data.select_dtypes(include=['number']).columns
+    categorie_column = data.select_dtypes(include=['object']).columns[0]
+
+    labels=data[categorie_column]
+    x=data[numeric_columns[0]]
+    y=data[numeric_columns[1]]
+    sizes=data[numeric_columns[2]]
+
+    colors = np.random.rand(len(x))
+    plt.scatter(x, y, s=sizes, c=colors, alpha=0.5)
+
+    plt.xlabel(numeric_columns[0])
+    plt.ylabel(numeric_columns[1])
+    plt.colorbar(label="Bubble sizes")
+    mplcursors.cursor(hover=True).connect("add", lambda sel: sel.annotation.set_text(labels[sel.target.index]))
+    plt.show()
+    return 'bubble chart'
+
 def line(data):
     categorical_columns = data.select_dtypes(include=['object']).columns
     numeric_columns = data.select_dtypes(include=['number']).columns
@@ -180,6 +200,10 @@ def dataset_has_sub_groups(data):
         return True
     else:
         return False
+
+def dataset_has_no_duplicate_values(data):
+    categorical_columns = data.select_dtypes(include=['object']).columns
+    return len(set(data[categorical_columns[0]]))==len(data[categorical_columns[0]])
 
 
 def IsTimeOrDate(input_str):
@@ -358,7 +382,7 @@ def main(repo):
 def launch_test(directory):
     for root, dirs, files in os.walk(directory):
         for file in files:
-            if file =="bubble_chart_data_no_cat.csv":
+            if file =="bubble_chart_data.csv":
                 main(os.path.join(root, file))
 
 if __name__ == "__main__":
