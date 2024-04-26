@@ -76,7 +76,7 @@ def choose_chart(data):
                 return histogram(data,data.columns[0],data.columns[1])
             return scatter(data,data.columns[0],data.columns[1])
         elif dataset_is_three_numiric(data):
-            return 'bubble chart'
+            return bubble(data)
     return 'error'
     return choose_chart(remove_least_important_column(data))
         
@@ -92,6 +92,21 @@ def scatter(data,xlabel="Value",ylabel="Frequency"):
     plt.scatter(data[xlabel], data[ylabel], alpha=0.5)
     plt.show()  
     return 'scatter plot'
+
+def bubble(data):
+    numeric_columns = data.select_dtypes(include=['number']).columns
+    x=data[numeric_columns[0]]
+    y=data[numeric_columns[1]]
+    sizes=data[numeric_columns[2]]
+    colors = np.random.rand(len(x))
+    plt.scatter(x, y, s=sizes, c=colors, alpha=0.5)
+
+    plt.xlabel(numeric_columns[0])
+    plt.ylabel(numeric_columns[1])
+    plt.colorbar(label="Bubble sizes")
+
+    plt.show()
+    return 'bubble chart N'
         
 def line(data):
     categorical_columns = data.select_dtypes(include=['object']).columns
@@ -343,7 +358,7 @@ def main(repo):
 def launch_test(directory):
     for root, dirs, files in os.walk(directory):
         for file in files:
-            if file =="time_serise_one.csv":
+            if file =="bubble_chart_data_no_cat.csv":
                 main(os.path.join(root, file))
 
 if __name__ == "__main__":
