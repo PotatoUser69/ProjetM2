@@ -58,18 +58,14 @@ def choose_chart(data):
                     return 'treemap'
             elif dataset_is_three_numiric(data):
                 return 'bubble chart'
-            # else:
-            #     return 'parallel coordinates plot'
         elif dataset_is_several_categorie(data):
             #verify if data containe one set of numerical values or several
             if dataset_is_one_numiric(data):
                 #verify if data have categories and subcategories
                 if dataset_has_sub_groups(data):
                     return 'sunburst chart'
-            # else:
-            #     return 'parallel coordinates plot'
-    #verify if data containe numerical data
-    elif dataset_is_numeric(data):
+    #verify if data containe only numerical data
+    elif dataset_is_numeric(data) and not dataset_is_categorical(data):
         #verify if data containe one set of numerical values or several
         if dataset_is_one_numiric(data):
             return histogram(data,data.columns[0])
@@ -80,6 +76,9 @@ def choose_chart(data):
             return scatter(data,data.columns[0],data.columns[1])
         elif dataset_is_three_numiric(data):
             return bubble(data)
+    #verify if data containe only categorical data
+    elif not dataset_is_numeric(data) and dataset_is_categorical(data):
+        return parallelCoordinates(data)
     return 'error'
     return choose_chart(remove_least_important_column(data))
         
@@ -343,6 +342,11 @@ def dataset_is_numeric(data):
     numeric_columns = data.select_dtypes(include=['number']).columns
     
     return len(numeric_columns) > 0
+
+def dataset_is_categorical(data):
+    categorical_columns = data.select_dtypes(include=['object']).columns
+    
+    return len(categorical_columns) > 0
 
 def dataset_has_one_value_per_categorie_group(data):
     categorical_columns = [col for col in data.columns if data[col].dtype == 'object']
