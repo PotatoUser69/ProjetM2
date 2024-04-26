@@ -1,0 +1,45 @@
+Category,Subcategory,Product
+Electronics,Phones,iPhone
+Electronics,Phones,Samsung Galaxy
+Electronics,Phones,Google Pixel
+Electronics,Laptops,MacBook Pro
+Electronics,Laptops,Dell XPS
+Electronics,Laptops,HP Spectre
+Electronics,Tablets,iPad
+Electronics,Tablets,Samsung Tab
+Electronics,Tablets,Microsoft Surface
+Electronics,Headphones,Beats
+Electronics,Headphones,Sony
+Electronics,Headphones,Bose QC35
+Electronics,Accessories,Chargers
+Electronics,Accessories,Cables
+Electronics,Accessories,Camera Accessories
+Home Appliances,Kitchen,Blender
+Home Appliances,Kitchen,Microwave
+Home Appliances,Kitchen,Dishwasher
+Home Appliances,Cleaning,Vacuum Cleaner
+Home Appliances,Cleaning,Washing Machine
+Home Appliances,Heating & Cooling,Air Conditioner
+Home Appliances,Heating & Cooling,Heater
+Fashion,Men's Clothing,T-shirts
+Fashion,Men's Clothing,Jeans
+Fashion,Women's Clothing,Dresses
+Fashion,Women's Clothing,Skirts
+Fashion,Accessories,Watches
+Fashion,Accessories,Jewelry
+Toys & Games,Outdoor,Swing Set
+Toys & Games,Outdoor,Bicycle
+Toys & Games,Indoor,Board Games
+Toys & Games,Indoor,Puzzle
+Books & Stationery,Fiction,Novels
+Books & Stationery,Non-Fiction,Educational Books
+Books & Stationery,Stationery,Notebooks
+Books & Stationery,Stationery,Pens
+Automotive,Car Accessories,Seat Covers
+Automotive,Car Accessories,Car Fresheners
+Automotive,Maintenance,Oils
+Automotive,Maintenance,Tools
+Sports,Outdoor,Golf Clubs
+Sports,Outdoor,Tennis Rackets
+Sports,Indoor,Yoga Mats
+Sports,Indoor,Dumbbells
