@@ -14,7 +14,7 @@ def choose_chart(data):
             if dataset_is_one_numiric(data):
                 return 'area plot'
             else:
-                return 'line plot'
+                return line(data)
         elif dataset_has_country_data(data):
             if dataset_is_one_numiric(data):
                 return 'map with values'
@@ -86,10 +86,27 @@ def histogram(data,xlabel="Value",ylabel="Frequency"):
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.show()
+    return 'histogram'
         
 def scatter(data,xlabel="Value",ylabel="Frequency"):
     plt.scatter(data[xlabel], data[ylabel], alpha=0.5)
     plt.show()  
+    return 'scatter plot'
+        
+def line(data):
+    categorical_columns = data.select_dtypes(include=['object']).columns
+    numeric_columns = data.select_dtypes(include=['number']).columns
+    
+    for cat_col in categorical_columns:
+        for num_col in numeric_columns:
+            print(num_col)
+            plt.plot(data[cat_col], data[num_col], label=num_col)
+    plt.xlabel(categorical_columns[0])
+    plt.xticks(rotation=45, ha='right')
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
+    return 'line chart'
 
 def pie(data):
     categorical_columns = data.select_dtypes(include=['object']).columns
@@ -98,6 +115,8 @@ def pie(data):
     labels = data[categorical_columns[0]]
     plt.pie(num_data,labels=labels,autopct='%1.1f%%')
     plt.show()  
+    
+    return 'pie chart'
 
 def bar(data):
     categorical_columns = data.select_dtypes(include=['object']).columns
@@ -110,6 +129,8 @@ def bar(data):
         plt.xticks(rotation=45, ha='right')
     plt.tight_layout()
     plt.show()
+    return 'bar chart'
+
 def donut(data):
     categorical_columns = data.select_dtypes(include=['object']).columns
     numeric_columns = data.select_dtypes(include=['number']).columns
@@ -121,6 +142,7 @@ def donut(data):
     fig = plt.gcf()
     fig.gca().add_artist(centre_circle)
     plt.show()  
+    return 'donut chart'
 
 def dataset_has_sub_groups(data):
     unique_combinations = data.groupby(list(data.columns)).size().reset_index().rename(columns={0:'count'})
@@ -306,8 +328,8 @@ def main(repo):
 def launch_test(directory):
     for root, dirs, files in os.walk(directory):
         for file in files:
-            print(file)
-            main(os.path.join(root, file))
+            if file =="time_serise_several.csv":
+                main(os.path.join(root, file))
 
 if __name__ == "__main__":
     repo_path = str(os.getcwd()+"//Data")
