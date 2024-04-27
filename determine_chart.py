@@ -186,26 +186,21 @@ def grouped_bar(data):
     categorical_columns = data.select_dtypes(include=['object']).columns
     numeric_columns = data.select_dtypes(include=['number']).columns
     
-    # Extracting data
     categories = data[categorical_columns[0]]
     num_data = data[numeric_columns]
-    
-    # Calculate the width of each bar
+
     num_bars = len(numeric_columns)
     bar_width = 0.35
     index = np.arange(len(categories))
     opacity = 0.8
     
-    # Create bars for each numerical column
     for i, col in enumerate(numeric_columns):
         plt.bar(index + i * bar_width, num_data[col], bar_width, alpha=opacity, label=col)
     
     plt.xlabel(categorical_columns[0])
     plt.ylabel("Values")
-    plt.title("Grouped Bar Plot")
     plt.xticks(index + bar_width, categories)
     
-    # Rotate x-axis labels if there are more than 5 values or if strings are too long
     if len(categories) > 5 or any(len(str(label)) > 10 for label in categories):
         plt.xticks(rotation=45, ha='right')
     
