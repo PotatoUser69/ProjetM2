@@ -5,6 +5,7 @@ from datetime import datetime
 import os
 import pycountry
 import mplcursors
+import seaborn as sns
 
 def choose_chart(data):
     #verify if data is categorical and also numerical
@@ -47,7 +48,7 @@ def choose_chart(data):
                     #verify if categorical data have less then 4 values
                     if dataset_has_less_then_4_categories(data):
                         return 'radar chart'
-                    return 'heatmap'
+                    heatmap(data)
                 else:
                     return 'box plot'
         elif dataset_is_two_categorie(data):
@@ -78,9 +79,10 @@ def choose_chart(data):
             return bubble(data)
     #verify if data containe only categorical data
     elif not dataset_is_numeric(data) and dataset_is_categorical(data):
-        return parallelCoordinates(data)
+        # return parallelCoordinates(data)
+        return 'parallelCoordinates'
     return 'error'
-    return choose_chart(remove_least_important_column(data))
+    # return choose_chart(remove_least_important_column(data))
         
 def histogram(data,xlabel="Value",ylabel="Frequency"):
     num_bins = int(np.sqrt(len(data)))
@@ -92,6 +94,15 @@ def histogram(data,xlabel="Value",ylabel="Frequency"):
         
 def scatter(data,xlabel="Value",ylabel="Frequency"):
     plt.scatter(data[xlabel], data[ylabel], alpha=0.5)
+    plt.show()  
+    return 'scatter plot'
+        
+def heatmap(data):
+    categorie_column = data.select_dtypes(include=['object']).columns[0]
+    data.set_index(categorie_column, inplace=True)
+    sns.heatmap(data, cmap="Blues", annot=True, square=False,  linewidth = 1)
+    plt.yticks(rotation=45)
+    plt.tight_layout()
     plt.show()  
     return 'scatter plot'
 
@@ -415,8 +426,7 @@ def main(repo):
 def launch_test(directory):
     for root, dirs, files in os.walk(directory):
         for file in files:
-            if file =="bubble_chart_data.csv":
-                main(os.path.join(root, file))
+            main(os.path.join(root, file))
 
 if __name__ == "__main__":
     repo_path = str(os.getcwd()+"//Data")
