@@ -72,32 +72,58 @@ def choose_chart(data):
     elif dataset_is_numeric(data) and not dataset_is_categorical(data):
         #verify if data containe one set of numerical values or several
         if dataset_is_one_numiric(data):
-            return histogram(data,data.columns[0])
+            return histogram(data)
         elif dataset_is_two_numiric(data):
             #verify if data have many values more then 400 data 
             if dataset_has_many_point(data):
-                return histogram(data,data.columns[0])
-            return scatter(data,data.columns[0],data.columns[1])
+                return histogram(data)
+            return scatter(data)
         elif dataset_is_three_numiric(data):
             return bubble(data)
     #verify if data containe only categorical data
     elif not dataset_is_numeric(data) and dataset_is_categorical(data):
-        return 'parallelCoordinates'
+        return parallelCoordinates(data)
     return 'error'
     return choose_chart(remove_least_important_column(data))
 
-def histogram(data,xlabel="Value"):
+def histogram(data):
     plt.hist(data,edgecolor='black')
-    plt.xlabel(xlabel)
+    plt.xlabel("Value")
     plt.ylabel("Frequency")
     plt.show()
     return 'histogram'
+        
+
+def parallelCoordinates(data):
+    categories=list(data.select_dtypes(include=['object']).columns)
+    cat_len=[len(set(data[i])) for i in  categories]
+    dimensions=[]
+    for i, cat in enumerate(categories):
+        lab=list(set(data[cat]))
+        values=[]
+        list_val=list(range(len(lab)))
+        for index in data[cat]:
+            values.append(lab.index(index))
+        dimensions.append(dict(range = [0,int(cat_len[i])],label = cat,tickvals = list_val, values = values,ticktext = lab))    
+    fig = go.Figure(data=go.Parcoords(
+            dimensions = dimensions
+        )
+    )
+
+    fig.update_layout(
+        plot_bgcolor = 'white',
+        paper_bgcolor = 'white'
+    )
+
+    fig.show()
+    return 'parallelCoordinates'
         
 def box(data):
     data.boxplot(figsize = (5,5), rot = 90, fontsize= '8', grid = False)
     return 'box'
         
-def scatter(data,xlabel="Value",ylabel="Frequency"):
+def scatter(data):
+    [xlabel,ylabel]=data.columns
     plt.scatter(data[xlabel], data[ylabel], alpha=0.5)
     plt.show()  
     return 'scatter plot'
