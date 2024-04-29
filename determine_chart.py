@@ -19,9 +19,8 @@ def choose_chart(data):
                 return area(data)
             else:
                 return line(data)
-        elif dataset_has_country_data(data):
-            if dataset_is_one_numiric(data):
-                return 'map with values'
+        elif dataset_has_country_data(data) and dataset_is_one_numiric(data):
+            return 'map with values'
         #verify if data containe one set of categorical data or several
         elif dataset_is_one_categorie(data):
             #verify if data containe one set of numerical values or several
@@ -77,22 +76,20 @@ def choose_chart(data):
         elif dataset_is_two_numiric(data):
             #verify if data have many values more then 400 data 
             if dataset_has_many_point(data):
-                return histogram(data,data.columns[0],data.columns[1])
+                return histogram(data,data.columns[0])
             return scatter(data,data.columns[0],data.columns[1])
         elif dataset_is_three_numiric(data):
             return bubble(data)
     #verify if data containe only categorical data
     elif not dataset_is_numeric(data) and dataset_is_categorical(data):
-        # return parallelCoordinates(data)
         return 'parallelCoordinates'
     return 'error'
-    # return choose_chart(remove_least_important_column(data))
-        
-def histogram(data,xlabel="Value",ylabel="Frequency"):
-    num_bins = int(np.sqrt(len(data)))
-    plt.hist(data, bins=num_bins, edgecolor='black')
+    return choose_chart(remove_least_important_column(data))
+
+def histogram(data,xlabel="Value"):
+    plt.hist(data,edgecolor='black')
     plt.xlabel(xlabel)
-    plt.ylabel(ylabel)
+    plt.ylabel("Frequency")
     plt.show()
     return 'histogram'
         
@@ -485,9 +482,8 @@ def main(repo):
 def launch_test(directory):
     for root, dirs, files in os.walk(directory):
         for file in files:
-            if file=="several_numerical_data.csv":
-                main(os.path.join(root, file))
+            main(os.path.join(root, file))
 
 if __name__ == "__main__":
-    repo_path = str(os.getcwd()+"//Data")
+    repo_path = str(os.getcwd()+"//Error")
     launch_test(repo_path)
