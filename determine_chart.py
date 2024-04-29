@@ -96,6 +96,10 @@ def histogram(data,xlabel="Value",ylabel="Frequency"):
     plt.show()
     return 'histogram'
         
+def box(data):
+    data.boxplot(figsize = (5,5), rot = 90, fontsize= '8', grid = False)
+    return 'box'
+        
 def scatter(data,xlabel="Value",ylabel="Frequency"):
     plt.scatter(data[xlabel], data[ylabel], alpha=0.5)
     plt.show()  
@@ -481,7 +485,7 @@ def main(repo):
 def launch_test(directory):
     for root, dirs, files in os.walk(directory):
         for file in files:
-            if file=="treemap_data.csv":
+            if file=="several_numerical_data.csv":
                 main(os.path.join(root, file))
 
 if __name__ == "__main__":
