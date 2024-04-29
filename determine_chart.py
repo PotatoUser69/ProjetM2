@@ -47,8 +47,8 @@ def choose_chart(data):
                 if dataset_has_no_duplicate_values(data):
                     #verify if categorical data have less then 4 values
                     if dataset_has_less_then_4_categories(data):
-                        return 'radar chart'
-                    heatmap(data)
+                        return radar(data)
+                    return heatmap(data)
                 else:
                     return 'box plot'
         elif dataset_is_two_categorie(data):
@@ -104,7 +104,34 @@ def heatmap(data):
     plt.yticks(rotation=45)
     plt.tight_layout()
     plt.show()  
-    return 'scatter plot'
+    return 'heatmap'
+
+def radar(data):
+    categorie_column = data.select_dtypes(include=['object']).columns[0]
+    labels = list(data[categorie_column])
+    categories = np.array(data.select_dtypes(include=['number']).columns)
+    data.drop(categorie_column, axis=1, inplace=True)
+    max_value = data.max().max()
+    min_value = data.min().min()
+    fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})
+
+    for index, row in data.iterrows():
+        values = list(row)
+        values += values[:1]
+        ax.plot(np.linspace(0, 2 * np.pi, len(categories) + 1), values, label=labels[index])
+
+    ax.set_ylim(0, max_value)
+    ax.set_theta_offset(np.pi / 2)
+    ax.set_theta_direction(-1)
+
+    ax.set_xticks(np.linspace(0, 2 * np.pi, len(categories) + 1)[:-1])
+    ax.set_xticklabels(categories)
+
+    plt.legend(bbox_to_anchor=(1.1, 1))
+    plt.title('Radar Chart')
+    plt.show()
+    
+    return 'radar'
 
 def bubble(data):
     numeric_columns = data.select_dtypes(include=['number']).columns
@@ -218,6 +245,7 @@ def grouped_bar(data):
     plt.legend()
     plt.tight_layout()
     plt.show()
+    return "grouped bar"
 
 
 def donut(data):
