@@ -1,10 +1,94 @@
-Category,Subcategory,Revenue ($)
-Electronics,Smartphones,1200000
-Electronics,Laptops,800000
-Electronics,Accessories,300000
-Clothing,Men's Wear,700000
-Clothing,Women's Wear,900000
-Clothing,Children's,400000
-Home & Living,Furniture,500000
-Home & Living,Kitchenware,250000
-Home & Living,Decor,350000
+Region,Product,Type,Brand,Model,Quantity
+North America,Electronics,Smartphone,Samsung,Galaxy S21,150
+North America,Electronics,Smartphone,Apple,iPhone 13,200
+North America,Electronics,Tablet,Apple,iPad Pro 12.9",180
+North America,Electronics,Laptop,Dell,XPS 13",220
+North America,Clothing,T-Shirt,Branded,Plain,500
+North America,Clothing,T-Shirt,Branded,Graphic,450
+North America,Clothing,T-Shirt,Unbranded,Plain,480
+North America,Clothing,T-Shirt,Unbranded,Graphic,420
+Europe,Electronics,Smartphone,Samsung,Galaxy S21,230
+Europe,Electronics,Smartphone,Apple,iPhone 13,180
+Europe,Electronics,Tablet,Apple,iPad Pro 12.9",200
+Europe,Electronics,Laptop,Dell,XPS 13",190
+Europe,Clothing,T-Shirt,Branded,Plain,400
+Europe,Clothing,T-Shirt,Branded,Graphic,360
+Europe,Clothing,T-Shirt,Unbranded,Plain,420
+Europe,Clothing,T-Shirt,Unbranded,Graphic,380
+Asia,Electronics,Smartphone,Samsung,Galaxy S21,260
+Asia,Electronics,Smartphone,Apple,iPhone 13,240
+Asia,Electronics,Tablet,Apple,iPad Pro 12.9",220
+Asia,Electronics,Laptop,Dell,XPS 13",240
+Asia,Clothing,T-Shirt,Branded,Plain,380
+Asia,Clothing,T-Shirt,Branded,Graphic,340
+Asia,Clothing,T-Shirt,Unbranded,Plain,390
+Asia,Clothing,T-Shirt,Unbranded,Graphic,350
+Africa,Electronics,Smartphone,Samsung,Galaxy S21,150
+Africa,Electronics,Smartphone,Apple,iPhone 13,120
+Africa,Electronics,Tablet,Apple,iPad Pro 12.9",100
+Africa,Electronics,Laptop,Dell,XPS 13",110
+Africa,Clothing,T-Shirt,Branded,Plain,250
+Africa,Clothing,T-Shirt,Branded,Graphic,220
+Africa,Clothing,T-Shirt,Unbranded,Plain,280
+Africa,Clothing,T-Shirt,Unbranded,Graphic,230
+Australia,Electronics,Smartphone,Samsung,Galaxy S21,180
+Australia,Electronics,Smartphone,Apple,iPhone 13,150
+Australia,Electronics,Tablet,Apple,iPad Pro 12.9",130
+Australia,Electronics,Laptop,Dell,XPS 13",160
+Australia,Clothing,T-Shirt,Branded,Plain,300
+Australia,Clothing,T-Shirt,Branded,Graphic,260
+Australia,Clothing,T-Shirt,Unbranded,Plain,320
+Australia,Clothing,T-Shirt,Unbranded,Graphic,280
+South America,Electronics,Smartphone,Samsung,Galaxy S21,200
+South America,Electronics,Smartphone,Apple,iPhone 13,180
+South America,Electronics,Tablet,Apple,iPad Pro 12.9",160
+South America,Electronics,Laptop,Dell,XPS 13",190
+South America,Clothing,T-Shirt,Branded,Plain,350
+South America,Clothing,T-Shirt,Branded,Graphic,310
+South America,Clothing,T-Shirt,Unbranded,Plain,370
+South America,Clothing,T-Shirt,Unbranded,Graphic,330
+Antarctica,Electronics,Smartphone,Samsung,Galaxy S21,100
+Antarctica,Electronics,Smartphone,Apple,iPhone 13,80
+Antarctica,Electronics,Tablet,Apple,iPad Pro 12.9",70
+Antarctica,Electronics,Laptop,Dell,XPS 13",90
+Antarctica,Clothing,T-Shirt,Branded,Plain,200
+Antarctica,Clothing,T-Shirt,Branded,Graphic,180
+Antarctica,Clothing,T-Shirt,Unbranded,Plain,220
+Antarctica,Clothing,T-Shirt,Unbranded,Graphic,190
+Europe,Electronics,Smartphone,Samsung,Galaxy S21,230
+Europe,Electronics,Smartphone,Apple,iPhone 13,180
+Europe,Electronics,Tablet,Apple,iPad Pro 12.9",200
+Europe,Electronics,Laptop,Dell,XPS 13",190
+Europe,Clothing,T-Shirt,Branded,Plain,400
+Europe,Clothing,T-Shirt,Branded,Graphic,360
+Europe,Clothing,T-Shirt,Unbranded,Plain,420
+Europe,Clothing,T-Shirt,Unbranded,Graphic,380
+Asia,Electronics,Smartphone,Samsung,Galaxy S21,260
+Asia,Electronics,Smartphone,Apple,iPhone 13,240
+Asia,Electronics,Tablet,Apple,iPad Pro 12.9",220
+Asia,Electronics,Laptop,Dell,XPS 13",240
+Asia,Clothing,T-Shirt,Branded,Plain,380
+Asia,Clothing,T-Shirt,Branded,Graphic,340
+Asia,Clothing,T-Shirt,Unbranded,Plain,390
+Asia,Clothing,T-Shirt,Unbranded,Graphic,350
+Africa,Electronics,Smartphone,Samsung,Galaxy S21,150
+Africa,Electronics,Smartphone,Apple,iPhone 13,120
+Africa,Electronics,Tablet,Apple,iPad Pro 12.9",100
+Africa,Electronics,Laptop,Dell,XPS 13",110
+Africa,Clothing,T-Shirt,Branded,Plain,250
+Africa,Clothing,T-Shirt,Branded,Graphic,220
+Africa,Clothing,T-Shirt,Unbranded,Plain,280
+Africa,Clothing,T-Shirt,Unbranded,Graphic,230
+Australia,Electronics,Smartphone,Samsung,Galaxy S21,180
+Australia,Electronics,Smartphone,Apple,iPhone 13,150
+Australia,Electronics,Tablet,Apple,iPad Pro 12.9",130
+Australia,Electronics,Laptop,Dell,XPS 13",160
+Australia,Clothing,T-Shirt,Branded,Plain,300
+Australia,Clothing,T-Shirt,Branded,Graphic,260
+Australia,Clothing,T-Shirt,Unbranded,Plain,320
+Australia,Clothing,T-Shirt,Unbranded,Graphic,280
+South America,Electronics,Smartphone,Samsung,Galaxy S21,200
+South America,Electronics,Smartphone,Apple,iPhone 13,180
+South America,Electronics,Tablet,Apple,iPad Pro 12.9",160
+South America,Electronics,Laptop,Dell,XPS 13",190
+South America,Clothing,T-Shirt,Branded,Plain,350

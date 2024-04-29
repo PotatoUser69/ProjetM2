@@ -58,15 +58,17 @@ def choose_chart(data):
             if dataset_is_one_numiric(data):
                 #verify if data have categories and subcategories
                 if dataset_has_sub_groups(data):
-                    return treemap(data)
+                    return sunburst(data)
             elif dataset_is_three_numiric(data):
                 return 'bubble chart'
+        elif dataset_is_three_categorie(data) and dataset_has_sub_groups(data) and dataset_is_one_numiric(data):
+            return sunburst(data)
         elif dataset_is_several_categorie(data):
             #verify if data containe one set of numerical values or several
             if dataset_is_one_numiric(data):
                 #verify if data have categories and subcategories
                 if dataset_has_sub_groups(data):
-                    return sunburst(data)
+                    return treemap(data)
     #verify if data containe only numerical data
     elif dataset_is_numeric(data) and not dataset_is_categorical(data):
         #verify if data containe one set of numerical values or several
@@ -98,6 +100,15 @@ def scatter(data,xlabel="Value",ylabel="Frequency"):
     plt.scatter(data[xlabel], data[ylabel], alpha=0.5)
     plt.show()  
     return 'scatter plot'
+        
+def treemap(data):
+    path=list(data.select_dtypes(include=['object']).columns)
+    values=data.select_dtypes(include=['number']).columns[0]
+    fig = px.treemap(data, path=path, values=values,color=values,color_continuous_scale=['#6BAED6', '#08306B'])
+    fig.update_layout(margin = dict(t=50, l=25, r=25, b=25))
+    fig.show()
+
+    return 'treemap'
         
 def sunburst(data):
     path=list(data.select_dtypes(include=['object']).columns)
@@ -378,10 +389,15 @@ def dataset_is_two_categorie(data):
     
     return len(categorical_columns) == 2
 
+def dataset_is_three_categorie(data):
+    categorical_columns = data.select_dtypes(include=['object']).columns
+    
+    return len(categorical_columns) == 3
+
 def dataset_is_several_categorie(data):
     categorical_columns = data.select_dtypes(include=['object']).columns
     
-    return len(categorical_columns) > 2
+    return len(categorical_columns) > 3
 
 def dataset_is_numeric(data):
     numeric_columns = data.select_dtypes(include=['number']).columns
@@ -465,7 +481,7 @@ def main(repo):
 def launch_test(directory):
     for root, dirs, files in os.walk(directory):
         for file in files:
-            if file=="sunburst_data.csv":
+            if file=="treemap_data.csv":
                 main(os.path.join(root, file))
 
 if __name__ == "__main__":
