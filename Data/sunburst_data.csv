@@ -1,11 +1,13 @@
-Category,Subcategory,Product,Revenue
-Electronics,Phones,iPhone,50000
-Electronics,Phones,Samsung Galaxy,35000
-Electronics,Phones,Google Pixel,20000
-Electronics,Laptops,MacBook Pro,60000
-Electronics,Laptops,Dell XPS,45000
-Electronics,Tablets,iPad,30000
-Electronics,Tablets,Samsung Tab,25000
-Electronics,Headphones,Beats,15000
-Electronics,Headphones,Sony,10000
-Electronics,Accessories,Chargers,5000
+Region,Product,Subproduct,Sales
+North America,Electronics,Smartphones,10000
+North America,Electronics,Laptops,15000
+North America,Clothing,T-Shirts,5000
+North America,Clothing,Jeans,8000
+Europe,Electronics,Smartphones,12000
+Europe,Electronics,Laptops,18000
+Europe,Clothing,T-Shirts,6000
+Europe,Clothing,Jeans,10000
+Asia,Electronics,Smartphones,15000
+Asia,Electronics,Laptops,20000
+Asia,Clothing,T-Shirts,7000
+Asia,Clothing,Jeans,12000

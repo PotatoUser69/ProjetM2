@@ -6,6 +6,8 @@ import os
 import pycountry
 import mplcursors
 import seaborn as sns
+import plotly.graph_objects as go
+import plotly.express as px
 
 def choose_chart(data):
     #verify if data is categorical and also numerical
@@ -56,7 +58,7 @@ def choose_chart(data):
             if dataset_is_one_numiric(data):
                 #verify if data have categories and subcategories
                 if dataset_has_sub_groups(data):
-                    return 'treemap'
+                    return treemap(data)
             elif dataset_is_three_numiric(data):
                 return 'bubble chart'
         elif dataset_is_several_categorie(data):
@@ -64,7 +66,7 @@ def choose_chart(data):
             if dataset_is_one_numiric(data):
                 #verify if data have categories and subcategories
                 if dataset_has_sub_groups(data):
-                    return 'sunburst chart'
+                    return sunburst(data)
     #verify if data containe only numerical data
     elif dataset_is_numeric(data) and not dataset_is_categorical(data):
         #verify if data containe one set of numerical values or several
@@ -96,6 +98,15 @@ def scatter(data,xlabel="Value",ylabel="Frequency"):
     plt.scatter(data[xlabel], data[ylabel], alpha=0.5)
     plt.show()  
     return 'scatter plot'
+        
+def sunburst(data):
+    path=list(data.select_dtypes(include=['object']).columns)
+    values=data.select_dtypes(include=['number']).columns[0]
+    fig = px.sunburst(data, path=path,  
+                  values=values) 
+    fig.show()
+
+    return 'sunburst'
         
 def heatmap(data):
     categorie_column = data.select_dtypes(include=['object']).columns[0]
@@ -454,7 +465,8 @@ def main(repo):
 def launch_test(directory):
     for root, dirs, files in os.walk(directory):
         for file in files:
-            main(os.path.join(root, file))
+            if file=="sunburst_data.csv":
+                main(os.path.join(root, file))
 
 if __name__ == "__main__":
     repo_path = str(os.getcwd()+"//Data")
