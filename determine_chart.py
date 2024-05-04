@@ -9,6 +9,13 @@ import seaborn as sns
 import plotly.graph_objects as go
 import plotly.express as px
 
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.compose import ColumnTransformer
+from sklearn.compose import make_column_selector as selector
+from sklearn.pipeline import Pipeline
+
 def choose_chart(data):
     #verify if data is categorical and also numerical
     if dataset_is_categories_and_numeric_values(data):
@@ -501,6 +508,50 @@ def dataset_cleaning(data):
         data[col] = data[col].astype(str)
 
     return data
+
+def get_feature_importance(data):
+    targets = list(data.columns[:])
+
+    column_trans = ColumnTransformer(transformers=
+        [('num', MinMaxScaler(), selector(dtype_exclude="object")),
+        ('cat', OrdinalEncoder(), selector(dtype_include="object"))],
+        remainder='drop')
+
+    # Create a random forest classifier for feature importance
+    clf = RandomForestClassifier(random_state=42, n_jobs=6, class_weight='balanced')
+    pipeline = Pipeline([('prep',column_trans),('clf', clf)])
+    
+    # Split the data into 30% test and 70% training
+    X_train, X_test, y_train, y_test = train_test_split(data[targets], data[data.columns[-1]], test_size=0.3, random_state=0)
+    
+    pipeline.fit(X_train, y_train)
+
+    feat_list = []
+
+    total_importance = 0
+    # Print the name and gini importance of each feature
+    for feature in zip(targets, pipeline['clf'].feature_importances_):
+        feat_list.append(feature)
+        total_importance += feature[1]
+            
+    included_feats = []
+    # Print the name and gini importance of each feature
+    for feature in zip(targets, pipeline['clf'].feature_importances_):
+        if feature[1] > .05:
+            included_feats.append(feature[0])
+            
+    print('\n',"Cumulative Importance =", total_importance)
+
+    # create DataFrame using data
+    data_imp = pd.DataFrame(feat_list, columns =['FEATURE', 'IMPORTANCE']).sort_values(by='IMPORTANCE', ascending=False)
+    data_imp['CUMSUM'] = data_imp['IMPORTANCE'].cumsum()
+    return data_imp
+
+def remove_least_important_column(data):
+    if dataset_has_sub_groups(data):
+        get_feature_importance(data)
+    
+    return new_data
 
 def load_csv_dataset(file_path):
     # Load dataset from CSV file
