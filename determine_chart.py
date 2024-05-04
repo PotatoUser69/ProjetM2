@@ -19,8 +19,8 @@ def choose_chart(data):
                 return area(data)
             else:
                 return line(data)
-        elif dataset_has_country_data(data) and dataset_is_one_numiric(data):
-            return 'map with values'
+        elif dataset_has_country_data(data) and dataset_is_one_numiric(data) and dataset_is_one_categorie(data):
+            return CountryMap(data)
         #verify if data containe one set of categorical data or several
         elif dataset_is_one_categorie(data):
             #verify if data containe one set of numerical values or several
@@ -92,7 +92,13 @@ def histogram(data):
     plt.ylabel("Frequency")
     plt.show()
     return 'histogram'
-        
+
+def CountryMap(data):
+    country=data.select_dtypes(include=['object']).columns[0]
+    value=data.select_dtypes(include=['number']).columns[0]
+    fig = px.choropleth(data, locations=country, color=value, hover_name=country)
+    fig.show()
+    return 'Map'
 
 def parallelCoordinates(data):
     categories=list(data.select_dtypes(include=['object']).columns)
