@@ -8,6 +8,7 @@ import mplcursors
 import seaborn as sns
 import plotly.graph_objects as go
 import plotly.express as px
+from geonamescache import GeonamesCache
 
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
@@ -83,7 +84,7 @@ def choose_chart(data):
             return histogram(data)
         elif dataset_is_two_numiric(data):
             #verify if data have many values more then 400 data 
-            if dataset_has_many_point(data):
+            if dataset_has_many_or_few_point(data):
                 return histogram(data)
             return scatter(data)
         elif dataset_is_three_numiric(data):
@@ -101,9 +102,17 @@ def histogram(data):
     return 'histogram'
 
 def CountryMap(data):
-    country=data.select_dtypes(include=['object']).columns[0]
-    value=data.select_dtypes(include=['number']).columns[0]
-    fig = px.choropleth(data, locations=country, color=value, hover_name=country)
+    country_column = data.select_dtypes(include=['object']).columns[0]
+    value_column = data.select_dtypes(include=['number']).columns[0]
+    print(value_column, country_column)
+    
+    fig = px.choropleth(data, 
+                        locations=country_column, 
+                        locationmode="country names", 
+                        color=value_column, 
+                        hover_name=country_column,
+                        title=f"Choropleth Map of {value_column} by Country")
+    
     fig.show()
     return 'Map'
 
@@ -370,14 +379,15 @@ def dataset_is_time_series_data(data):
         if is_date_or_time_column:
             return True
     return False
-
-def is_country(name):
-    country_names = set(country.name for country in pycountry.countries)
-    return name in country_names
-
 def is_column_countries(column_values):
+    gc = GeonamesCache()
+    countries = gc.get_countries_by_names()
+    country_list=['Czech Republic']
+    country_name = set(country.name for country in pycountry.countries)
+    country_names = set(countries.keys())
     for value in column_values:
-        if not is_country(value):
+        if not ((value in country_names) or (value in country_name) or (value in country_list)):
+            print(value)
             return False
     return True
 
@@ -388,9 +398,9 @@ def dataset_has_country_data(data):
             return True
     return False
 
-def dataset_has_many_point(data):
+def dataset_has_many_or_few_point(data):
     num_rows, num_columns = data.shape  
-    return (num_rows > 400)
+    return (num_rows > 300 or num_rows < 50)
 
 def dataset_is_categories_and_numeric_values(data):
     categorical_columns = data.select_dtypes(include=['object']).columns
