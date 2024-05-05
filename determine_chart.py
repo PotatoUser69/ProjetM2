@@ -590,5 +590,5 @@ def launch_test(directory):
             main(os.path.join(root, file))
 
 if __name__ == "__main__":
-    repo_path = str(os.getcwd()+"//Error")
+    repo_path = str(os.getcwd()+"//Test")
     launch_test(repo_path)
