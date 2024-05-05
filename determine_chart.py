@@ -15,6 +15,7 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.compose import ColumnTransformer
 from sklearn.compose import make_column_selector as selector
 from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import LabelEncoder, OrdinalEncoder
 
 def choose_chart(data):
     #verify if data is categorical and also numerical
@@ -90,7 +91,6 @@ def choose_chart(data):
     #verify if data containe only categorical data
     elif not dataset_is_numeric(data) and dataset_is_categorical(data):
         return parallelCoordinates(data)
-    return 'error'
     return choose_chart(remove_least_important_column(data))
 
 def histogram(data):
@@ -197,18 +197,22 @@ def radar(data):
 
 def bubble(data):
     numeric_columns = data.select_dtypes(include=['number']).columns
-    x=data[numeric_columns[0]]
-    y=data[numeric_columns[1]]
-    sizes=data[numeric_columns[2]]
+    x = data[numeric_columns[0]]
+    y = data[numeric_columns[1]]
+    sizes = data[numeric_columns[2]]
+    min_size = 20
+    max_size = 200  
+    sizes_scaled = np.interp(sizes, (sizes.min(), sizes.max()), (min_size, max_size))
+
     colors = np.random.rand(len(x))
-    plt.scatter(x, y, s=sizes, c=colors, alpha=0.5)
+    plt.scatter(x, y, s=sizes_scaled, c=colors, alpha=0.5)
 
     plt.xlabel(numeric_columns[0])
     plt.ylabel(numeric_columns[1])
     plt.colorbar(label="Bubble sizes")
 
     plt.show()
-    return 'bubble chart N'
+    return 'bubble chart'
 
 def bubble_one_cat(data):
     numeric_columns = data.select_dtypes(include=['number']).columns
@@ -544,14 +548,22 @@ def get_feature_importance(data):
 
     # create DataFrame using data
     data_imp = pd.DataFrame(feat_list, columns =['FEATURE', 'IMPORTANCE']).sort_values(by='IMPORTANCE', ascending=False)
-    data_imp['CUMSUM'] = data_imp['IMPORTANCE'].cumsum()
+    # data_imp['CUMSUM'] = data_imp['IMPORTANCE'].cumsum()
     return data_imp
 
+def get_least_significant_numerical_column(nums,data):
+    for feature in nums:
+        if feature in data['FEATURE'].values:
+            return data.loc[data['FEATURE'] == feature, 'FEATURE'].iloc[0]
+
 def remove_least_important_column(data):
-    if dataset_has_sub_groups(data):
-        get_feature_importance(data)
-    
-    return new_data
+    feature_importance= get_feature_importance(data)
+    numeric_columns=data.select_dtypes(include=['number']).columns
+    if (dataset_has_sub_groups(data) or dataset_is_numiric(data)) and not dataset_is_one_numiric(data):
+        least_important=get_least_significant_numerical_column(numeric_columns,feature_importance)
+        data = data.drop(columns=[least_important])
+    print(data.columns)
+    return data
 
 def load_csv_dataset(file_path):
     # Load dataset from CSV file
