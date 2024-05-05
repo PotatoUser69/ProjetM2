@@ -46,8 +46,6 @@ def choose_chart(data):
                 #verify if categorical data don't have any repeted values
                 if dataset_has_no_duplicate_values(data) and dataset_has_less_then_4_categories(data):
                     return grouped_bar(data)
-                else:
-                    return 'box plot'
             elif dataset_is_three_numiric(data):
                 if dataset_has_no_duplicate_values(data) and dataset_has_less_then_4_categories(data):
                     return grouped_bar(data)
@@ -59,16 +57,12 @@ def choose_chart(data):
                     if dataset_has_less_then_4_categories(data):
                         return radar(data)
                     return heatmap(data)
-                else:
-                    return 'box plot'
         elif dataset_is_two_categorie(data):
             #verify if data containe one set of numerical values or several
             if dataset_is_one_numiric(data):
                 #verify if data have categories and subcategories
                 if dataset_has_sub_groups(data):
                     return sunburst(data)
-            elif dataset_is_three_numiric(data):
-                return 'bubble chart'
         elif dataset_is_three_categorie(data) and dataset_has_sub_groups(data) and dataset_is_one_numiric(data):
             return sunburst(data)
         elif dataset_is_several_categorie(data):
@@ -89,6 +83,8 @@ def choose_chart(data):
             return scatter(data)
         elif dataset_is_three_numiric(data):
             return bubble(data)
+        else:
+            box(data)
     #verify if data containe only categorical data
     elif not dataset_is_numeric(data) and dataset_is_categorical(data):
         return parallelCoordinates(data)
@@ -104,7 +100,6 @@ def histogram(data):
 def CountryMap(data):
     country_column = data.select_dtypes(include=['object']).columns[0]
     value_column = data.select_dtypes(include=['number']).columns[0]
-    print(value_column, country_column)
     
     fig = px.choropleth(data, 
                         locations=country_column, 
@@ -141,7 +136,8 @@ def parallelCoordinates(data):
     return 'parallelCoordinates'
         
 def box(data):
-    data.boxplot(figsize = (5,5), rot = 90, fontsize= '8', grid = False)
+    data.boxplot(figsize = (5,5), rot = 90, fontsize= '14', grid = False)
+    plt.show() 
     return 'box'
         
 def scatter(data):
@@ -387,7 +383,6 @@ def is_column_countries(column_values):
     country_names = set(countries.keys())
     for value in column_values:
         if not ((value in country_names) or (value in country_name) or (value in country_list)):
-            print(value)
             return False
     return True
 
@@ -553,12 +548,9 @@ def get_feature_importance(data):
     for feature in zip(targets, pipeline['clf'].feature_importances_):
         if feature[1] > .05:
             included_feats.append(feature[0])
-            
-    print('\n',"Cumulative Importance =", total_importance)
 
     # create DataFrame using data
     data_imp = pd.DataFrame(feat_list, columns =['FEATURE', 'IMPORTANCE']).sort_values(by='IMPORTANCE', ascending=False)
-    # data_imp['CUMSUM'] = data_imp['IMPORTANCE'].cumsum()
     return data_imp
 
 def get_least_significant_numerical_column(nums,data):
@@ -572,7 +564,9 @@ def remove_least_important_column(data):
     if (dataset_has_sub_groups(data) or dataset_is_numiric(data)) and not dataset_is_one_numiric(data):
         least_important=get_least_significant_numerical_column(numeric_columns,feature_importance)
         data = data.drop(columns=[least_important])
-    print(data.columns)
+    else:
+        least_important=get_least_significant_numerical_column(data.columns,feature_importance)
+        data = data.drop(columns=[least_important])
     return data
 
 def load_csv_dataset(file_path):
