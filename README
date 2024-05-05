@@ -1,5 +1,5 @@
-- Work steps:
-  we have problem with dataset_has_two_independent_lists that is detecting all the categorical data 
-  as a 2 listes of data we need to specify more details like categories dont repeate and other things
+- How to install:
+  run this command to install the dependencies
+  pip install -r requirements.txt
 - For more details visite:
   https://www.data-to-viz.com/#dendrogram
