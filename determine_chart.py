@@ -84,7 +84,7 @@ def choose_chart(data):
         elif dataset_is_three_numiric(data):
             return bubble(data)
         else:
-            box(data)
+            return box(data)
     #verify if data containe only categorical data
     elif not dataset_is_numeric(data) and dataset_is_categorical(data):
         return parallelCoordinates(data)
@@ -584,5 +584,5 @@ def launch_test(directory):
             main(os.path.join(root, file))
 
 if __name__ == "__main__":
-    repo_path = str(os.getcwd()+"//Test")
+    repo_path = str(os.getcwd()+"//Error")
     launch_test(repo_path)
