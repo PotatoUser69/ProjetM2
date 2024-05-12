@@ -9,6 +9,7 @@ import seaborn as sns
 import plotly.graph_objects as go
 import plotly.express as px
 from geonamescache import GeonamesCache
+import re
 
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
@@ -18,7 +19,14 @@ from sklearn.compose import make_column_selector as selector
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import LabelEncoder, OrdinalEncoder
 
+def perform_dimensionality_reduction(data):
+    features=data[get_feature_importance(data,threshold=.09)[1]]
+    return features
+
 def choose_chart(data):
+    #verify if data is categorical and also numerical
+    if not dataset_has_sub_groups(data) and large_dataset(data):
+        data=perform_dimensionality_reduction(data)
     #verify if data is categorical and also numerical
     if dataset_is_categories_and_numeric_values(data):
         #verify if data is time series
@@ -62,15 +70,15 @@ def choose_chart(data):
             if dataset_is_one_numiric(data):
                 #verify if data have categories and subcategories
                 if dataset_has_sub_groups(data):
-                    return sunburst(data)
+                    return treemap(data)
         elif dataset_is_three_categorie(data) and dataset_has_sub_groups(data) and dataset_is_one_numiric(data):
-            return sunburst(data)
+            return treemap(data)
         elif dataset_is_several_categorie(data):
             #verify if data containe one set of numerical values or several
             if dataset_is_one_numiric(data):
                 #verify if data have categories and subcategories
                 if dataset_has_sub_groups(data):
-                    return treemap(data)
+                    return sunburst(data)
     #verify if data containe only numerical data
     elif dataset_is_numeric(data) and not dataset_is_categorical(data):
         #verify if data containe one set of numerical values or several
@@ -90,14 +98,29 @@ def choose_chart(data):
         return parallelCoordinates(data)
     return choose_chart(remove_least_important_column(data))
 
-def histogram(data):
-    plt.hist(data,edgecolor='black')
-    plt.xlabel("Value")
-    plt.ylabel("Frequency")
-    plt.show()
-    return 'histogram'
+def histogram(data,ssecondary=False):
+    fig = px.histogram(data, x=data.columns[0], title="Histogram",
+                       barmode='overlay', # to overlay bars
+                       opacity=0.7, # to make bars transparent
+                       barnorm='percent', # to normalize bars to percent
+                       histnorm='probability density') # to normalize bars to probability density
+    fig.update_xaxes(title="Value")
+    fig.update_yaxes(title="Frequency")
+    fig.update_traces(marker=dict(line=dict(color='black', width=1))) # to add black border to bars
+    save_dir = 'charts'
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
 
-def CountryMap(data):
+    # Define the file path for saving the plot
+    file_path = 'histogram.html'
+
+    fig.write_html(os.path.join(save_dir, file_path))   # Save the plot to an HTML file
+
+    if ssecondary==True:
+        return file_path
+    return [file_path,'histogram.html']
+
+def CountryMap(data,ssecondary=False):
     country_column = data.select_dtypes(include=['object']).columns[0]
     value_column = data.select_dtypes(include=['number']).columns[0]
     
@@ -108,99 +131,193 @@ def CountryMap(data):
                         hover_name=country_column,
                         title=f"Choropleth Map of {value_column} by Country")
     
-    fig.show()
-    return 'Map'
+    save_dir = 'charts'
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
 
-def parallelCoordinates(data):
-    categories=list(data.select_dtypes(include=['object']).columns)
-    cat_len=[len(set(data[i])) for i in  categories]
-    dimensions=[]
+    # Define the file path for saving the plot
+    file_path = 'CountryMap.html'
+
+    fig.write_html(os.path.join(save_dir, file_path))   # Save the plot to an HTML file
+
+    if ssecondary==True:
+        return file_path
+    return [file_path,bar(data,True)]
+
+def parallelCoordinates(data,ssecondary=False):
+    categories = list(data.select_dtypes(include=['object']).columns)
+    cat_len = [len(set(data[i])) for i in  categories]
+    dimensions = []
+    
     for i, cat in enumerate(categories):
-        lab=list(set(data[cat]))
-        values=[]
-        list_val=list(range(len(lab)))
+        lab = list(set(data[cat]))
+        values = []
+        list_val = list(range(len(lab)))
+        
         for index in data[cat]:
             values.append(lab.index(index))
-        dimensions.append(dict(range = [0,int(cat_len[i])],label = cat,tickvals = list_val, values = values,ticktext = lab))    
-    fig = go.Figure(data=go.Parcoords(
-            dimensions = dimensions
-        )
-    )
+        
+        dimensions.append(dict(range=[0,int(cat_len[i])], label=cat, tickvals=list_val, values=values, ticktext=lab))    
+    
+    fig = go.Figure(data=go.Parcoords(dimensions=dimensions))
 
     fig.update_layout(
-        plot_bgcolor = 'white',
-        paper_bgcolor = 'white'
+        plot_bgcolor='white',
+        paper_bgcolor='white'
     )
 
-    fig.show()
-    return 'parallelCoordinates'
-        
-def box(data):
-    data.boxplot(figsize = (5,5), rot = 90, fontsize= '14', grid = False)
-    plt.show() 
-    return 'box'
-        
-def scatter(data):
-    [xlabel,ylabel]=data.columns
-    plt.scatter(data[xlabel], data[ylabel], alpha=0.5)
-    plt.show()  
-    return 'scatter plot'
-        
-def treemap(data):
+    # Define the directory for saving the plot
+    save_dir = 'charts'
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+
+    # Define the file path for saving the plot
+    file_path = 'parallel_coordinates.html'
+    fig.write_html(os.path.join(save_dir, file_path))  # Save the plot to an HTML file
+
+    if ssecondary==True:
+        return file_path
+    return [file_path,'parallel_coordinates.html']
+
+def treemap(data,ssecondary=False):
     path=list(data.select_dtypes(include=['object']).columns)
     values=data.select_dtypes(include=['number']).columns[0]
     fig = px.treemap(data, path=path, values=values,color=values,color_continuous_scale=['#6BAED6', '#08306B'])
     fig.update_layout(margin = dict(t=50, l=25, r=25, b=25))
-    fig.show()
+    save_dir = 'charts'
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
 
-    return 'treemap'
-        
-def sunburst(data):
+    # Define the file path for saving the plot
+    file_path = 'treemap.html'
+    fig.write_html(os.path.join(save_dir, file_path))  # Save the plot to an HTML file
+
+    if ssecondary==True:
+        return file_path
+    return [file_path,sunburst(data,True)]
+
+def sunburst(data,ssecondary=False):
     path=list(data.select_dtypes(include=['object']).columns)
     values=data.select_dtypes(include=['number']).columns[0]
     fig = px.sunburst(data, path=path,  
                   values=values) 
-    fig.show()
+    save_dir = 'charts'
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
 
-    return 'sunburst'
-        
-def heatmap(data):
-    categorie_column = data.select_dtypes(include=['object']).columns[0]
-    data.set_index(categorie_column, inplace=True)
-    sns.heatmap(data, cmap="Blues", annot=True, square=False,  linewidth = 1)
-    plt.yticks(rotation=45)
-    plt.tight_layout()
-    plt.show()  
-    return 'heatmap'
+    # Define the file path for saving the plot
+    file_path = 'sunburst.html'
+    fig.write_html(os.path.join(save_dir, file_path))  # Save the plot to an HTML file
+    if ssecondary==True:
+        return file_path
+    return [file_path,treemap(data,True)]
 
-def radar(data):
-    categorie_column = data.select_dtypes(include=['object']).columns[0]
-    labels = list(data[categorie_column])
-    categories = np.array(data.select_dtypes(include=['number']).columns)
-    data.drop(categorie_column, axis=1, inplace=True)
-    max_value = data.max().max()
-    min_value = data.min().min()
-    fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})
+def box(data,ssecondary=False):
+    fig = px.box(data, title="Box Plot")
+    fig.update_layout(xaxis_tickangle=-90,  # Rotate x-axis labels
+                      font=dict(size=14),  # Font size
+                      yaxis_title="Value")
+    save_dir = 'charts'
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
 
-    for index, row in data.iterrows():
-        values = list(row)
-        values += values[:1]
-        ax.plot(np.linspace(0, 2 * np.pi, len(categories) + 1), values, label=labels[index])
+    # Define the file path for saving the plot
+    file_path = 'box.html'
+    fig.write_html(os.path.join(save_dir, file_path))  # Save the plot to an HTML file
 
-    ax.set_ylim(0, max_value)
-    ax.set_theta_offset(np.pi / 2)
-    ax.set_theta_direction(-1)
+    if ssecondary==True:
+        return file_path
+    return [file_path,'box.html']
 
-    ax.set_xticks(np.linspace(0, 2 * np.pi, len(categories) + 1)[:-1])
-    ax.set_xticklabels(categories)
+def scatter(data,ssecondary=False):
+    [xlabel, ylabel] = data.columns
+    fig = px.scatter(data, x=xlabel, y=ylabel, title="Scatter Plot")
+    fig.update_traces(marker=dict(size=5, opacity=0.5))  # Adjust marker size and opacity
+    save_dir = 'charts'
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
 
-    plt.legend(bbox_to_anchor=(1.1, 1))
-    plt.title('Radar Chart')
-    plt.show()
+    # Define the file path for saving the plot
+    file_path = 'scatter.html'
+    fig.write_html(os.path.join(save_dir, file_path))  # Save the plot to an HTML file
+
+    if ssecondary==True:
+        return file_path
+    return [file_path,histogram(data,True)]  
+
+def heatmap(data,ssecondary=False):
+    categorical_column = data.select_dtypes(include=['object']).columns[0]
+    data.reset_index(inplace=True)  # Reset index so the categorical column can be accessed
+    fig = go.Figure(data=go.Heatmap(
+        z=data.values,
+        x=data.columns,
+        y=data[categorical_column],
+        colorscale='Blues',  # Set the color scale
+        hoverongaps=False
+    ))
+    fig.update_layout(
+        title='Heatmap',
+        xaxis=dict(title='Column'),
+        yaxis=dict(title=categorical_column, autorange='reversed'),  # Reverse the y-axis
+        height=600,  # Set the height of the figure
+        width=800  # Set the width of the figure
+    )
     
-    return 'radar'
+    save_dir = 'charts'
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
 
-def bubble(data):
+    # Define the file path for saving the plot
+    file_path = 'heatmap.html'
+    fig.write_html(os.path.join(save_dir, file_path))  # Save the plot to an HTML file
+    with open(f'charts/{file_path}', 'w') as f:
+        f.write(fig.to_html(full_html=False, include_plotlyjs='cdn'))  # Exclude Plotly JS
+        f.write('<style>')
+        f.write('body {')  # Opening body tag for CSS
+        f.write('display: flex;justify-content: center;')  # Example CSS property
+        f.write('}')
+        f.write('</style>') 
+    if ssecondary==True:
+        return file_path
+    return [file_path,radar(data,True)]          
+
+def radar(data,ssecondary=False):
+    categorical_column = data.select_dtypes(include=['object']).columns[0]
+    labels = list(data[categorical_column])
+    categories = list(data.select_dtypes(include=['number']).columns)
+    max_value = data.max()
+    
+    fig = go.Figure()
+    
+    for index, row in data.iterrows():
+        values = list(row[1:])
+        values += values[:] # Append the first value to the end to close the loop
+        fig.add_trace(go.Scatterpolar(
+            r=values,
+            theta=categories,
+            fill='toself',
+            name=labels[index]
+        ))
+    
+    fig.update_layout(
+        polar=dict(
+            radialaxis=dict(range=[0, max_value]),
+            angularaxis=dict(direction='clockwise')
+        ),
+        title='Radar Chart'
+    )
+    save_dir = 'charts'
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+
+    # Define the file path for saving the plot
+    file_path = 'radar.html'
+    fig.write_html(os.path.join(save_dir, file_path))  # Save the plot to an HTML file
+
+    if ssecondary==True:
+        return file_path
+    return [file_path,heatmap(data,True)]          
+def bubble(data,ssecondary=False):
     numeric_columns = data.select_dtypes(include=['number']).columns
     x = data[numeric_columns[0]]
     y = data[numeric_columns[1]]
@@ -209,89 +326,207 @@ def bubble(data):
     max_size = 200  
     sizes_scaled = np.interp(sizes, (sizes.min(), sizes.max()), (min_size, max_size))
 
-    colors = np.random.rand(len(x))
-    plt.scatter(x, y, s=sizes_scaled, c=colors, alpha=0.5)
+    # Create a scatter plot using Plotly
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=x,
+        y=y,
+        mode='markers',
+        marker=dict(
+            size=sizes_scaled,
+            color=np.random.rand(len(x)),  # Random colors
+            opacity=0.5
+        ),
+        text=data.index,  # Use index as hover text
+        hoverinfo='text'
+    ))
 
-    plt.xlabel(numeric_columns[0])
-    plt.ylabel(numeric_columns[1])
-    plt.colorbar(label="Bubble sizes")
+    fig.update_layout(
+        xaxis_title=numeric_columns[0],
+        yaxis_title=numeric_columns[1],
+        coloraxis_colorbar=dict(title='Bubble sizes')
+    )  
+    save_dir = 'charts'
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
 
-    plt.show()
-    return 'bubble chart'
+    # Define the file path for saving the plot
+    file_path = 'bubble.html'
+    fig.write_html(os.path.join(save_dir, file_path))  # Save the plot to an HTML file
 
-def bubble_one_cat(data):
+    if ssecondary==True:
+        return file_path
+    return [file_path,'bubble.html']          
+def bubble_one_cat(data,ssecondary=False):
     numeric_columns = data.select_dtypes(include=['number']).columns
     categorie_column = data.select_dtypes(include=['object']).columns[0]
 
-    labels=data[categorie_column]
-    x=data[numeric_columns[0]]
-    y=data[numeric_columns[1]]
-    sizes=data[numeric_columns[2]]
+    labels = data[categorie_column]
+    x = data[numeric_columns[0]]
+    y = data[numeric_columns[1]]
+    sizes = data[numeric_columns[2]]
 
-    colors = np.random.rand(len(x))
-    plt.scatter(x, y, s=sizes, c=colors, alpha=0.5)
+    # Create a scatter plot using Plotly
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=x,
+        y=y,
+        mode='markers',
+        marker=dict(
+            size=sizes,
+            color=np.random.rand(len(x)),  # Random colors
+            opacity=0.5
+        ),
+        text=labels,  # Use category labels as hover text
+        hoverinfo='text'
+    ))
 
-    plt.xlabel(numeric_columns[0])
-    plt.ylabel(numeric_columns[1])
-    plt.colorbar(label="Bubble sizes")
-    mplcursors.cursor(hover=True).connect("add", lambda sel: sel.annotation.set_text(labels[sel.target.index]))
-    plt.show()
-    return 'bubble chart'
+    fig.update_layout(
+        xaxis_title=numeric_columns[0],
+        yaxis_title=numeric_columns[1],
+        coloraxis_colorbar=dict(title='Bubble sizes')
+    )
+    save_dir = 'charts'
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
 
-def line(data):
+    # Define the file path for saving the plot
+    file_path = 'bubble_one.html'
+    fig.write_html(os.path.join(save_dir, file_path))  # Save the plot to an HTML file
+
+    if ssecondary==True:
+        return file_path
+    return [file_path,bubble(data,True)]          
+def line(data,ssecondary=False):
     categorical_columns = data.select_dtypes(include=['object']).columns
     numeric_columns = data.select_dtypes(include=['number']).columns
+
+    fig = go.Figure()
     
-    for cat_col in categorical_columns:
-        for num_col in numeric_columns:
-            plt.plot(data[cat_col], data[num_col], label=num_col)
-    plt.xlabel(categorical_columns[0])
-    if len(data[categorical_columns[0]]) > 8 or any(len(str(label)) > 7 for label in data[categorical_columns[0]]):
-        plt.xticks(rotation=45, ha='right')
-    plt.tight_layout()
-    plt.legend()
-    plt.show()
-    return 'line chart'
+    for num_col in numeric_columns:
+        fig.add_trace(go.Scatter(
+            x=data[categorical_columns[0]],
+            y=data[num_col],
+            mode='lines+markers',  # Display lines and markers
+            name=num_col  # Use column name as trace name
+        ))
 
-def area(data):
+    fig.update_layout(
+        xaxis_title=categorical_columns[0],
+        yaxis_title='Value',
+        title='Line Chart',
+        legend=dict(title='Numeric Columns')
+    )  
+    save_dir = 'charts'
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+
+    # Define the file path for saving the plot
+    file_path = 'line.html'
+    fig.write_html(os.path.join(save_dir, file_path))  # Save the plot to an HTML file
+
+    if ssecondary==True:
+        return file_path
+    return [file_path,area(data,True)]   
+
+def area(data,ssecondary=False):
     numeric_columns = data.select_dtypes(include=['number']).columns
     categorical_columns = data.select_dtypes(include=['object']).columns
-    plt.fill_between(data[categorical_columns[0]], data[numeric_columns[0]], color="skyblue", alpha=0.4)
-    plt.plot(data[categorical_columns[0]],data[numeric_columns[0]], color="Slateblue", alpha=0.6, linewidth=2)
-    plt.xlabel(categorical_columns[0])
-    plt.ylabel(numeric_columns[0])
-    if len(data[categorical_columns[0]]) > 8 or any(len(str(label)) > 7 for label in data[categorical_columns[0]]):
-        plt.xticks(rotation=45, ha='right')
-    plt.tight_layout()
-    plt.xlim(data[categorical_columns[0]].min(), data[categorical_columns[0]].max())  # Adjust as needed for x-axis
-    plt.ylim(0, data[numeric_columns[0]].max()) 
-    plt.show()
-    return 'area chart'
 
-def pie(data):
+    fig = go.Figure()
+
+    colors = px.colors.qualitative.Plotly
+
+    # Iterate over all numeric columns
+    for i, col in enumerate(numeric_columns):
+        color = colors[i % len(colors)]  # Get color from palette
+        r, g, b = re.findall('(..)', color[1:])
+        rgba_color= f'rgba({int(r, 16)}, {int(g, 16)}, {int(b, 16)}, {0.4})'
+        # Add the filled area trace
+        fig.add_trace(go.Scatter(
+            x=data[categorical_columns[0]],
+            y=data[col],
+            mode='lines',  # Display only lines for filled area
+            fill='tozeroy',  # Fill area to zero y-axis
+            fillcolor=rgba_color,  # Set the fill color
+            line=dict(color=color),  # Set line color
+            name=col  # Set the trace name
+        ))
+
+    fig.update_layout(
+        xaxis_title=categorical_columns[0],
+        yaxis_title='Value',
+        title='Area Chart',
+        legend=dict(title='Numeric Columns')
+    )
+    save_dir = 'charts'
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+
+    # Define the file path for saving the plot
+    file_path = 'area.html'
+    fig.write_html(os.path.join(save_dir, file_path))  # Save the plot to an HTML file
+
+    if ssecondary==True:
+        return file_path
+    return [file_path,line(data,True)]  
+def pie(data,ssecondary=False):
     categorical_columns = data.select_dtypes(include=['object']).columns
     numeric_columns = data.select_dtypes(include=['number']).columns
     num_data = data[numeric_columns[0]]
     labels = data[categorical_columns[0]]
-    plt.pie(num_data,labels=labels,autopct='%1.1f%%')
-    plt.show()  
-    
-    return 'pie chart'
 
-def bar(data):
+    fig = go.Figure(data=[go.Pie(
+        labels=labels,
+        values=num_data,
+        textinfo='percent+label',  # Show percent and label
+    )])
+
+    fig.update_layout(
+        title='Pie Chart',
+    )  
+    save_dir = 'charts'
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+
+    # Define the file path for saving the plot
+    file_path = 'pie.html'
+    fig.write_html(os.path.join(save_dir, file_path))  # Save the plot to an HTML file
+
+    if ssecondary==True:
+        return file_path
+    return [file_path,bar(data,True)]          
+def bar(data,ssecondary=False):
     categorical_columns = data.select_dtypes(include=['object']).columns
     numeric_columns = data.select_dtypes(include=['number']).columns
     num_data = data[numeric_columns[0]]
     labels = data[categorical_columns[0]]
-    plt.bar(labels,num_data)
-    plt.ylabel(numeric_columns[0])
-    if len(labels) > 5 or any(len(str(label)) > 10 for label in labels):
-        plt.xticks(rotation=45, ha='right')
-    plt.tight_layout()
-    plt.show()
-    return 'bar chart'
 
-def grouped_bar(data):
+    fig = go.Figure()
+
+    fig.add_trace(go.Bar(
+        x=labels,
+        y=num_data,
+    ))
+
+    fig.update_layout(
+        xaxis_title=categorical_columns[0],
+        yaxis_title=numeric_columns[0],
+        title='Bar Chart',
+    )
+    save_dir = 'charts'
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+
+    # Define the file path for saving the plot
+    file_path = 'bar.html'
+    fig.write_html(os.path.join(save_dir, file_path))  # Save the plot to an HTML file
+
+    if ssecondary==True:
+        return file_path
+    return [file_path,pie(data,True)] 
+
+def grouped_bar(data,ssecondary=False):
     categorical_columns = data.select_dtypes(include=['object']).columns
     numeric_columns = data.select_dtypes(include=['number']).columns
     
@@ -300,45 +535,71 @@ def grouped_bar(data):
 
     num_bars = len(numeric_columns)
     bar_width = 0.35
-    index = np.arange(len(categories))
+    index = list(range(len(categories)))
     opacity = 0.8
-    
+    fig = go.Figure()
+
     for i, col in enumerate(numeric_columns):
-        plt.bar(index + i * bar_width, num_data[col], bar_width, alpha=opacity, label=col)
+        x_values = [val + i * bar_width for val in index]  # Calculate x values for each bar group
+        fig.add_trace(go.Bar(
+            x=x_values, 
+            y=num_data[col], 
+            name=col
+        ))
     
-    plt.xlabel(categorical_columns[0])
-    plt.ylabel("Values")
-    plt.xticks(index + bar_width, categories)
-    
-    if len(categories) > 5 or any(len(str(label)) > 10 for label in categories):
-        plt.xticks(rotation=45, ha='right')
-    
-    plt.legend()
-    plt.tight_layout()
-    plt.show()
-    return "grouped bar"
+    x_tickvals = [val + bar_width * (num_bars - 1) / 2 for val in index]  # Calculate tick values for x-axis
 
+    fig.update_layout(
+        xaxis=dict(tickvals=x_tickvals, ticktext=categories),
+        xaxis_title=categorical_columns[0],
+        yaxis_title="Values",
+        title="Grouped Bar Chart",
+        barmode='group',
+        legend_title="Numeric Columns"
+    )
+    save_dir = 'charts'
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
 
-def donut(data):
+    # Define the file path for saving the plot
+    file_path = 'grouped.html'
+    fig.write_html(os.path.join(save_dir, file_path))  # Save the plot to an HTML file
+
+    if ssecondary==True:
+        return file_path
+    return [file_path,line(data,True)]    
+def donut(data,ssecondary=False):
     categorical_columns = data.select_dtypes(include=['object']).columns
     numeric_columns = data.select_dtypes(include=['number']).columns
     num_data = data[numeric_columns[0]]
     labels = data[categorical_columns[0]]
-    plt.pie(num_data, labels=labels,
-        autopct='%1.1f%%', pctdistance=0.85)
-    centre_circle = plt.Circle((0, 0), 0.65, fc='white')
-    fig = plt.gcf()
-    fig.gca().add_artist(centre_circle)
-    plt.show()  
-    return 'donut chart'
+
+    fig = go.Figure(data=[go.Pie(
+        labels=labels,
+        values=num_data,
+        hole=0.6,  # Set the size of the hole for the donut chart
+    )])
+
+    fig.update_layout(
+        title="Donut Chart",
+    )
+    save_dir = 'charts'
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+
+    # Define the file path for saving the plot
+    file_path = 'donut.html'
+    fig.write_html(os.path.join(save_dir, file_path))  # Save the plot to an HTML file
+
+    if ssecondary==True:
+        return file_path
+    return [file_path,bar(data,True)]          
 
 def dataset_has_sub_groups(data):
-    unique_combinations = data.groupby(list(data.columns)).size().reset_index().rename(columns={0:'count'})
-    if len(unique_combinations) > 1:
-        return True
-    else:
-        return False
-
+    categorical_columns = data.select_dtypes(include=['object']).columns
+    return len(categorical_columns)>1 and not dataset_has_no_duplicate_values(data)
+def large_dataset(data):
+    return len(data.columns)>4
 def dataset_has_no_duplicate_values(data):
     categorical_columns = data.select_dtypes(include=['object']).columns
     return len(set(data[categorical_columns[0]]))==len(data[categorical_columns[0]])
@@ -518,7 +779,8 @@ def dataset_cleaning(data):
 
     return data
 
-def get_feature_importance(data):
+def get_feature_importance(data,threshold=.05):
+    data = data.dropna()
     targets = list(data.columns[:])
 
     column_trans = ColumnTransformer(transformers=
@@ -546,12 +808,12 @@ def get_feature_importance(data):
     included_feats = []
     # Print the name and gini importance of each feature
     for feature in zip(targets, pipeline['clf'].feature_importances_):
-        if feature[1] > .05:
+        if feature[1] > threshold:
             included_feats.append(feature[0])
 
     # create DataFrame using data
     data_imp = pd.DataFrame(feat_list, columns =['FEATURE', 'IMPORTANCE']).sort_values(by='IMPORTANCE', ascending=False)
-    return data_imp
+    return [data_imp,included_feats]
 
 def get_least_significant_numerical_column(nums,data):
     for feature in nums:
@@ -559,7 +821,7 @@ def get_least_significant_numerical_column(nums,data):
             return data.loc[data['FEATURE'] == feature, 'FEATURE'].iloc[0]
 
 def remove_least_important_column(data):
-    feature_importance= get_feature_importance(data)
+    feature_importance= get_feature_importance(data)[0]
     numeric_columns=data.select_dtypes(include=['number']).columns
     if (dataset_has_sub_groups(data) or dataset_is_numiric(data)) and not dataset_is_one_numiric(data):
         least_important=get_least_significant_numerical_column(numeric_columns,feature_importance)
@@ -573,15 +835,18 @@ def load_csv_dataset(file_path):
     # Load dataset from CSV file
     return dataset_cleaning(pd.read_csv(file_path))
 
-def main(repo):
+def files():
+    directory = str(os.getcwd()+"\\data")
+    for root, dirs, files in os.walk(directory):
+        return files
+def main(repo,file):
     dataset = load_csv_dataset(file_path=repo)
     selected_chart = choose_chart(dataset)
-    print("Selected chart type:", selected_chart)
 
 def launch_test(directory):
     for root, dirs, files in os.walk(directory):
         for file in files:
-            main(os.path.join(root, file))
+            main(os.path.join(root, file),file)
 
 if __name__ == "__main__":
     repo_path = str(os.getcwd()+"//Error")
